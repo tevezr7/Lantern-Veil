@@ -5,10 +5,16 @@ using UnityEngine;
 public class Interactable : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public bool useEvents;
+    [SerializeField]
     public string prompt;
     
     public void BaseInteract()
     {
+        if (useEvents)
+        {
+            GetComponent<InteractionEvent>().onInteract.Invoke(); // Invoke the event if useEvents is true
+        }
         Interact();
     }
     protected virtual void Interact()
