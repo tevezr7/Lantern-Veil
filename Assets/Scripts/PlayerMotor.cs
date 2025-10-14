@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerMotor : MonoBehaviour
 {
-    private CharacterController controller;
+    private CharacterController controller; 
     private Vector3 playerVelocity;
     private bool isGrounded;
 
@@ -82,7 +82,7 @@ public class PlayerMotor : MonoBehaviour
             Vector3 moveDirection = Vector3.zero;
             moveDirection.x = input.x;
             moveDirection.z = input.y;
-            controller.Move(transform.TransformDirection(moveDirection) * speed * Time.deltaTime);
+            controller.Move(transform.TransformDirection(moveDirection) * speed * Time.deltaTime); 
             playerVelocity.y += gravity * Time.deltaTime;
             if (isGrounded && playerVelocity.y < 0)
                 playerVelocity.y = -2f;
