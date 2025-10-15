@@ -1463,6 +1463,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1aa8dba79690d842844edee05aa5400, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputManager
+  audioSource: {fileID: 1867157596}
+  footstepWalkClip: {fileID: 8300000, guid: 255d7919b5a1c164fb5507e9a1e6ff12, type: 3}
+  footstepSprintClip: {fileID: 8300000, guid: 255d7919b5a1c164fb5507e9a1e6ff12, type: 3}
+  jumpClip: {fileID: 8300000, guid: b47238fb55a519945a93f498715b8732, type: 3}
+  landClip: {fileID: 8300000, guid: 255d7919b5a1c164fb5507e9a1e6ff12, type: 3}
+  dashClip: {fileID: 8300000, guid: 84ea9dd0d8ad2f3479f088beb0976a07, type: 3}
+  strideLengthWalk: 2
+  strideLengthSprint: 1.5
+  inputDeadzone: 0.05
+  walkStepInterval: 0.5
+  sprintStepInterval: 0.35
+  debugFootsteps: 0
 --- !u!114 &1867157583
 MonoBehaviour:
   m_ObjectHideFlags: 0
