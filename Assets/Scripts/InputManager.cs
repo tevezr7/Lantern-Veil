@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour
 
     private PlayerMotor motor;
     private PlayerLook look;
+    private PlayerCombat combat;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -16,6 +17,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private AudioClip jumpClip;
     [SerializeField] private AudioClip landClip;
     [SerializeField] private AudioClip dashClip;
+    [SerializeField] private AudioClip swingClip;
 
     [Header("Footstep Settings (Distance-Based)")]
     [Tooltip("Meters per step while walking.")]
@@ -50,6 +52,7 @@ public class InputManager : MonoBehaviour
 
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
+        combat = GetComponent<PlayerCombat>();
 
         if (motor == null) Debug.LogError("[InputManager] PlayerMotor not found.");
         if (look == null) Debug.LogError("[InputManager] PlayerLook not found.");
@@ -66,19 +69,36 @@ public class InputManager : MonoBehaviour
         onFoot.Sprint.performed += ctx =>
         {
             isSprinting = true;
-            motor?.Sprint();
+            motor?.Sprint(); 
         };
         onFoot.Sprint.canceled += ctx =>
         {
             isSprinting = false;
-            motor?.StopSprinting();
+            motor?.StopSprinting(); 
         };
 
         onFoot.Dodge.performed += ctx =>
         {
-            var dir = onFoot.Movement.ReadValue<Vector2>();
-            motor?.Dodge(dir);
+            var dir = onFoot.Movement.ReadValue<Vector2>(); // get current movement input
+            motor?.Dodge(dir); // pass current movement input
+            combat?.DodgeLogic();
             PlayOneShot(dashClip);
+        };
+
+        onFoot.Attack.performed += ctx =>
+        {
+            combat?.Attack(true);
+            PlayOneShot(swingClip);
+        };
+
+        onFoot.Block.performed += ctx =>
+        {
+            combat?.Block(true);
+        };
+
+        onFoot.Block.canceled += ctx =>
+        {
+            combat?.Block(false);  // stop blocking when button released
         };
     }
 

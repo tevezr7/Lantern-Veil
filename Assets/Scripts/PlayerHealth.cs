@@ -6,13 +6,17 @@ using UnityEngine.InputSystem;
 
 public class PlayerHealth : MonoBehaviour
 { 
+    private PlayerCombat playerCombat;
+
     [Header("Health Bar")]
-    private float health;
+    public float health;
     private float lerpTimer;
     public float maxHealth = 100f;
     public float chipSpeed = 2f;
     public Image frontHealthBar;
     public Image backHealthBar;
+    private float lastDamageTaken;   // internal record
+    public float LastDamageTaken => lastDamageTaken; // allows read-only access
 
     [Header("Audio")]
     public AudioSource playerAudio;
@@ -23,6 +27,7 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         health = maxHealth;
+        playerCombat = GetComponent<PlayerCombat>();
     }
 
     // Update is called once per frame
@@ -30,6 +35,12 @@ public class PlayerHealth : MonoBehaviour
     {
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
+    }
+
+    void LateUpdate()
+    {
+        // auto-reset EACH FRAME, after everyone else has run Update()
+        lastDamageTaken = 0f;
     }
 
     public void UpdateHealthUI()
@@ -58,11 +69,22 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage (float damage)
+    public void TakeDamage (float damage, Vector3 attackerPosition)
     {
+        lastDamageTaken = damage;
+        if (playerCombat != null)
+        {
+            damage = playerCombat.PreventDamage(damage, attackerPosition);
+        }
+        if (damage <= 0f) return; // no damage taken   
         health -= damage; 
         lerpTimer = 0f; 
         playerAudio.PlayOneShot(damageClip);
+    }
+
+    public void TakeDamage(float damage) // overload for when attacker position is unknown, unity Events handling
+    {
+        TakeDamage(damage, transform.position); // fallback attacker pos = self
     }
 
     public void RestoreHealth (float healAmount)
