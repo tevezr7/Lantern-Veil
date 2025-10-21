@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 
 public class PlayerHealth : MonoBehaviour
-{
+{ 
     private PlayerCombat playerCombat;
 
     [Header("Health Bar")]
@@ -21,8 +21,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("Audio")]
     public AudioSource playerAudio;
     public AudioClip damageClip;
-
-
+    
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -70,7 +70,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage, Vector3 attackerPosition)
+    public void TakeDamage (float damage, Vector3 attackerPosition)
     {
         lastDamageTaken = damage;
         if (playerCombat != null)
@@ -78,8 +78,8 @@ public class PlayerHealth : MonoBehaviour
             damage = playerCombat.PreventDamage(damage, attackerPosition);
         }
         if (damage <= 0f) return; // no damage taken   
-        health -= damage;
-        lerpTimer = 0f;
+        health -= damage; 
+        lerpTimer = 0f; 
         playerAudio.PlayOneShot(damageClip);
     }
 
@@ -88,15 +88,15 @@ public class PlayerHealth : MonoBehaviour
         TakeDamage(damage, transform.position); // fallback attacker pos = self
     }
 
-    public void RestoreHealth(float healAmount)
+    public void RestoreHealth (float healAmount)
     {
         health += healAmount;
         lerpTimer = 0f;
     }
-
+    
     public void DrinkPotion()
     {
-        if (health >= maxHealth)
+        if( health >= maxHealth)
             return;
         var inventory = GetComponent<PotionInventory>();
         if (inventory != null && inventory.potion_counter > 0)
@@ -106,6 +106,6 @@ public class PlayerHealth : MonoBehaviour
 
         }
     }
+
+
 }
-
-
