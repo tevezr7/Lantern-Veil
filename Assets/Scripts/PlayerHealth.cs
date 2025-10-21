@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
-using UnityEngine.Events;
 
 public class PlayerHealth : MonoBehaviour
 { 
@@ -22,10 +21,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("Audio")]
     public AudioSource playerAudio;
     public AudioClip damageClip;
-
-    [Header("Events")]
-    public UnityEvent onDied;      
-    private bool isDead = false;     
+    
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -39,13 +36,6 @@ public class PlayerHealth : MonoBehaviour
     {
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
-
-     
-        if (!isDead && health <= 0f)
-        {
-            isDead = true;
-            onDied?.Invoke();
-        }
     }
 
     void LateUpdate()
@@ -89,8 +79,8 @@ public class PlayerHealth : MonoBehaviour
         }
         if (damage <= 0f) return; // no damage taken   
         health -= damage; 
-        lerpTimer = 0f;
-        if (playerAudio && damageClip) playerAudio.PlayOneShot(damageClip);
+        lerpTimer = 0f; 
+        playerAudio.PlayOneShot(damageClip);
     }
 
     public void TakeDamage(float damage) // overload for when attacker position is unknown, unity Events handling
@@ -102,7 +92,19 @@ public class PlayerHealth : MonoBehaviour
     {
         health += healAmount;
         lerpTimer = 0f;
-        if (isDead && health > 0f) isDead = false;
+    }
+    
+    public void DrinkPotion()
+    {
+        if( health >= maxHealth)
+            return;
+        var inventory = GetComponent<PotionInventory>();
+        if (inventory != null && inventory.potion_counter > 0)
+        {
+            inventory.UsePotion();
+            RestoreHealth(50);
+
+        }
     }
     public void DrinkPotion()
     {
