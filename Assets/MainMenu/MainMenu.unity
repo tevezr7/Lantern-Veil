@@ -883,9 +883,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 292619fc06af21242904dfb29cf58c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonHover
-  hoverScale: 1.06
-  pressedScale: 0.98
-  speed: 12
 --- !u!114 &462416121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6497,8 +6494,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 590676fb490f1694d9e99d14ba338e0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIAudio
-  hover: {fileID: 8300000, guid: af018a2a36c0de643a76d94a242c7188, type: 3}
-  click: {fileID: 8300000, guid: 51f614327bda9414eb8c07bcd33507ed, type: 3}
 --- !u!82 &1084794434
 AudioSource:
   m_ObjectHideFlags: 0
@@ -6768,7 +6763,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1110768593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6781,7 +6776,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98d6af77044ee834f909fbc85af748a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneFader
-  duration: 1
 --- !u!225 &1110768594
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -7160,9 +7154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 292619fc06af21242904dfb29cf58c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonHover
-  hoverScale: 1.06
-  pressedScale: 0.98
-  speed: 12
 --- !u!114 &1346481513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7817,9 +7808,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 292619fc06af21242904dfb29cf58c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonHover
-  hoverScale: 1.06
-  pressedScale: 0.98
-  speed: 12
 --- !u!1 &1568181937
 GameObject:
   m_ObjectHideFlags: 0
@@ -8254,9 +8242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 292619fc06af21242904dfb29cf58c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonHover
-  hoverScale: 1.06
-  pressedScale: 0.98
-  speed: 12
 --- !u!114 &1734114454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8539,9 +8524,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 292619fc06af21242904dfb29cf58c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonHover
-  hoverScale: 1.06
-  pressedScale: 0.98
-  speed: 12
 --- !u!114 &1804650201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8880,9 +8862,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e8c74eb1f26a8f48ac1806f3058faed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
-  gameSceneName: Lantern-Veil
-  mainButtonsGroup: {fileID: 987494}
-  optionsPanel: {fileID: 272678536}
 --- !u!4 &2021718998
 Transform:
   m_ObjectHideFlags: 0

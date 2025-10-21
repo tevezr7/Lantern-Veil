@@ -106,19 +106,7 @@ public class PlayerHealth : MonoBehaviour
 
         }
     }
-    public void DrinkPotion()
-    {
-        if (health >= maxHealth)
-            return;
-        var inventory = GetComponent<PotionInventory>();
-        if (inventory != null && inventory.potion_counter > 0)
-        {
-            inventory.UsePotion();
-            RestoreHealth(50);
-
-        }
-    }
-
+  
 
 }
 
