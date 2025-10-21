@@ -9,6 +9,13 @@ public class Interactable : MonoBehaviour
     [SerializeField]
     public string prompt;
     
+    protected Transform player;
+
+    protected virtual void Awake()
+    {
+        player = GameObject.FindWithTag("Player")?.transform;
+    }
+
     public void BaseInteract()
     {
         if (useEvents)

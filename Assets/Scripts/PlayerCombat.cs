@@ -7,6 +7,9 @@ public class PlayerCombat : MonoBehaviour
     private EnemyHealth enemyHealth;
     private bool isBlocking;
     private bool isAttacking;
+    public AudioSource playerAudio;
+    public AudioClip blockClip;
+    public AudioClip swingClip;
 
     [Header("Attack")]
     public float attackWindup = 0.2f; //still haven't implemented
@@ -39,7 +42,8 @@ public class PlayerCombat : MonoBehaviour
         playerHealth = GetComponent<PlayerHealth>();
         float currentHealth = playerHealth.health;
         float damageTaken = playerHealth.LastDamageTaken;
-        if(blockOrigin == null)
+        float initialDamage = attackDamage; 
+        if (blockOrigin == null)
         {
             blockOrigin = transform;
         }
@@ -62,6 +66,7 @@ public class PlayerCombat : MonoBehaviour
         nextAttack = Time.time + attackDelay; // set next attack time
         Vector3 origin = transform.position + transform.forward * attackRange + Vector3.up; // Adjust for player height
         Collider[] hitColliders = Physics.OverlapSphere(origin, attackRadius, attackLayerMask); // Detect enemies in attack radius
+        playerAudio.PlayOneShot(swingClip);
         foreach (Collider hitCollider in hitColliders) // Loop through all detected colliders
         {
             // Apply damage to the hit enemy
@@ -78,9 +83,31 @@ public class PlayerCombat : MonoBehaviour
         isBlocking = state; //not sure which script to implement in, but enemy recoil after being blocked would be nice
     }
 
-    //if possible, a perfect block check would be nice too
+    
+
+    public void PowerAttack()
+    {
+        //longer windup animation when we get the animations. everything rn is temporary until we have animations
+
+        
+
+        //future code to break blocks or stagger enemies
+        
+    }
+
+    
 
     //power attacks that break blocks? 
+
+    public void Parry()
+    {
+        //perfect timing block that staggers enemies?
+    }
+
+    public void JumpAttack()
+    {
+
+    }
 
     //jump attacks that can't be blocked?
     public bool BlockCone(Vector3 attackerPosition)
@@ -108,7 +135,11 @@ public class PlayerCombat : MonoBehaviour
         if (isDodging)
             return 0f; // No damage taken while dodging
         else
-        if (isBlocking && BlockCone(attackerPosition)) return damageTaken * (1 - blockPercent / 100f); // Reduce damage if blocking and within block cone
+        if (isBlocking && BlockCone(attackerPosition))
+        {
+            playerAudio.PlayOneShot(blockClip);
+            return damageTaken * (1 - blockPercent / 100f); // Reduce damage if blocking and within block cone
+        }
         else return damageTaken;
     }
 }

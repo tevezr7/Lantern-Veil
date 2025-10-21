@@ -9,6 +9,7 @@ public class InputManager : MonoBehaviour
     private PlayerMotor motor;
     private PlayerLook look;
     private PlayerCombat combat;
+    private PlayerHealth health;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -17,7 +18,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private AudioClip jumpClip;
     [SerializeField] private AudioClip landClip;
     [SerializeField] private AudioClip dashClip;
-    [SerializeField] private AudioClip swingClip;
+
 
     [Header("Footstep Settings (Distance-Based)")]
     [Tooltip("Meters per step while walking.")]
@@ -53,6 +54,7 @@ public class InputManager : MonoBehaviour
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
         combat = GetComponent<PlayerCombat>();
+        health = GetComponent<PlayerHealth>(); 
 
         if (motor == null) Debug.LogError("[InputManager] PlayerMotor not found.");
         if (look == null) Debug.LogError("[InputManager] PlayerLook not found.");
@@ -88,7 +90,11 @@ public class InputManager : MonoBehaviour
         onFoot.Attack.performed += ctx =>
         {
             combat?.Attack(true);
-            PlayOneShot(swingClip);
+        };
+
+        onFoot.PowerAttack.performed += ctx =>
+        {
+            combat?.PowerAttack();
         };
 
         onFoot.Block.performed += ctx =>
@@ -99,6 +105,11 @@ public class InputManager : MonoBehaviour
         onFoot.Block.canceled += ctx =>
         {
             combat?.Block(false);  // stop blocking when button released
+        };
+
+        onFoot.Heal.performed += ctx =>
+        {
+            health?.DrinkPotion();
         };
     }
 

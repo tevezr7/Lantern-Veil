@@ -4,10 +4,11 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     // References
-    
+
     public NavMeshAgent agent;
     public Transform player;
     public LayerMask whatIsGround, whatIsPlayer;
+    private Animator anim;
 
     // Patrolling
     public Vector3 walkPoint;
@@ -22,76 +23,89 @@ public class EnemyAI : MonoBehaviour
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
 
+    // For debug state change detection
+    private bool lastInAttackRange;
+    private bool lastInSightRange;
+
     private void Awake()
     {
-        
-        player = GameObject.Find("Player").transform;
+        var playerObj = GameObject.Find("Player");
+        if (playerObj != null) player = playerObj.transform;
+        else Debug.LogWarning($"{name}: GameObject.Find(\"Player\") returned null. Check player name in scene or assign Transform in inspector.");
 
         // - Get the NavMeshAgent component attached to this GameObject. The agent controls movement on the NavMesh.
         agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
     }
 
     private void Update()
     {
+        if (player == null) return; // safe-guard
+
         // Each frame we update detection booleans using Physics.CheckSphere.
-        // Physics.CheckSphere checks whether any collider on the specified LayerMask overlaps a sphere centered at transform.position.
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
-        
-        // The order matters: patrol is the fallback, chase is mid-distance, attack is highest priority.
+        // Quick debug log when state changes (prevents spamming)
+        if (playerInAttackRange != lastInAttackRange || playerInSightRange != lastInSightRange)
+        {
+            float dist = Vector3.Distance(transform.position, player.position);
+            Debug.Log($"{name}: dist={dist:F2}, sight={playerInSightRange}, attack={playerInAttackRange}, agent.stoppingDistance={agent?.stoppingDistance}");
+            lastInAttackRange = playerInAttackRange;
+            lastInSightRange = playerInSightRange;
+        }
+
+        // State machine
         if (!playerInSightRange && !playerInAttackRange) Patroling();
-        if ((playerInSightRange && !playerInAttackRange)) ChasePlayer();
-        if (playerInAttackRange && playerInSightRange) AttackPlayer();
+        else if (playerInSightRange && !playerInAttackRange) ChasePlayer();
+        else if (playerInAttackRange && playerInSightRange) AttackPlayer();
+
+        bool isWalking = agent != null && agent.velocity.magnitude > 0.01f && !playerInAttackRange;
+        if (anim) anim.SetBool("isWalking", isWalking);
     }
 
     private void Patroling()
     {
         if (!walkPointSet) SearchWalkPoint();
 
-        // If a walk point is set, tell the NavMeshAgent to move there.
-        // Note: agent.SetDestination is non-blocking; agent calculates a path and moves over time.
         if (walkPointSet)
             agent.SetDestination(walkPoint);
 
-        // Compute distance to the current walk point to know when we've reached it.
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
-
-        // Walkpoint reached (within 1 unit) -> mark as unset so a new one is chosen on the next patrol cycle.
-        // The threshold (1f) is arbitrary; adjust to your agent size and desired accuracy.
         if (distanceToWalkPoint.magnitude < 1f)
             walkPointSet = false;
     }
 
     private void SearchWalkPoint()
     {
-        // Choose a random point within a square of side length (2 * walkPointRange) centered on the enemy.
-        // This simply offsets the enemy's current position by a random X and Z. Y remains the same.
-        // The chosen point is not validated against the NavMesh or ground here.
         float randomZ = Random.Range(-walkPointRange, walkPointRange);
         float randomX = Random.Range(-walkPointRange, walkPointRange);
         Vector3 candidate = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
         float sampleMaxDistance = 2.0f; // Max distance to sample from candidate point
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(candidate, out hit, sampleMaxDistance, NavMesh.AllAreas)) // Check if the candidate point is on the NavMesh
+        if (NavMesh.SamplePosition(candidate, out hit, sampleMaxDistance, NavMesh.AllAreas))
         {
-            // Use the nearest point on the NavMesh and mark walkPoint as set.
             walkPoint = hit.position;
             walkPointSet = true;
         }
         else
         {
-            walkPointSet = false; // No valid point found; will try again next patrol cycle.
+            walkPointSet = false;
         }
-
-       
     }
 
     private void ChasePlayer()
     {
+        if (player == null || agent == null) return;
+
+        // Ensure agent attempts to get inside attackRange.
+        // Keep a small margin so the agent will step inside the attack sphere.
+        float margin = 0.1f;
+        agent.stoppingDistance = Mathf.Max(0f, attackRange - margin);
+
         agent.SetDestination(player.position);
-        //enemy faces player while chasing, slows down when within certain range, then maintains certain distance
+
         float distance = Vector3.Distance(transform.position, player.position);
         if (distance < 5f)
         {
@@ -102,39 +116,40 @@ public class EnemyAI : MonoBehaviour
         {
             agent.speed = 3.5f; // Default speed
         }
-
-        
     }
 
     private void WithinRange()
     {
-        // This function can be used to handle logic when the player is within a certain range.
-        // Currently not implemented.
-        // enemy will slow, face player, and prepare to attack
+        // Placeholder
     }
 
-    private void AttackPlayer()
+    void AttackPlayer()
     {
-        agent.SetDestination(transform.position); // Stop moving
+        if(!agent.isStopped) agent.isStopped = true; // Stop the agent from moving
+        if (agent != null) agent.SetDestination(transform.position); // Stop moving
 
         var flatTarget = new Vector3(player.position.x, transform.position.y, player.position.z);
         transform.LookAt(flatTarget);  //face the player
 
-
         if (!alreadyAttacked)
         {
-            var combat = GetComponent<EnemyCombat>();
-            if (combat != null) combat.Attack(true);
-
+            if (anim) anim.SetTrigger("Attack");
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks); // calls ResetAttack after cooldown
         }
-
-            
-    }
-    private void ResetAttack() 
-    { 
-        alreadyAttacked = false; 
     }
 
+    private void ResetAttack()
+    {
+        alreadyAttacked = false;
+    }
+
+    // Draw detection spheres in the editor to visually debug ranges.
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightRange);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
 }

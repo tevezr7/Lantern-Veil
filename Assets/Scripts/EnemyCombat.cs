@@ -4,7 +4,6 @@ public class EnemyCombat : MonoBehaviour
 {
     // Attack
     [Header("Attack")]
-    public float attackWindup = 0.2f;     // delay before the hit fires
     public float attackDelay = 3f;     // cooldown between presses/AI calls
     public float attackDamage = 15f;
     public float attackRange = 1.8f;     // center of swing in front of enemy
@@ -26,6 +25,11 @@ public class EnemyCombat : MonoBehaviour
     void Update()
     {
         
+    }
+    
+    public void AttackEvent() //called by animation event
+    {
+        Attack(true);
     }
 
     public void Attack(bool state) //NOT DONE, this is just a port from player attack

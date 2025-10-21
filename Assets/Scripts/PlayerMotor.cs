@@ -58,6 +58,8 @@ public class PlayerMotor : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         controller = GetComponent<CharacterController>();
         combat = GetComponent<PlayerCombat>();
         baseSpeed = speed;
