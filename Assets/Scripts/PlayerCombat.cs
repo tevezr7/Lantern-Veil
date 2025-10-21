@@ -27,6 +27,7 @@ public class PlayerCombat : MonoBehaviour
     public float blockAngle = 90f; 
     public Transform blockOrigin; // where the block is centered (usually player transform)                            
     public bool IsBlocking => isBlocking;
+    private bool canPerfectBlock = false;
     private float lastDodgeTime = -999f;
 
     [Header("Dodge")]
@@ -56,6 +57,11 @@ public class PlayerCombat : MonoBehaviour
 
     }
 
+    public void AttackEvent() //called by animation event
+    {
+        Attack(true);
+    }
+
     public void Attack(bool state)
     {
         //still need to implement windup and attack animation
@@ -78,6 +84,11 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    public void BlockEvent() //called by animation event
+    {
+        Block(true);
+    }
+
     public void Block(bool state)
     {
         isBlocking = state; //not sure which script to implement in, but enemy recoil after being blocked would be nice
@@ -95,13 +106,22 @@ public class PlayerCombat : MonoBehaviour
         
     }
 
-    
+
 
     //power attacks that break blocks? 
 
-    public void Parry()
+    
+
+    public void PerfectStart()   // called by animation event
     {
-        //perfect timing block that staggers enemies?
+        canPerfectBlock = true;
+        Debug.Log("Perfect block window opened!");
+    }
+
+    public void PerfectEnd()     // called by animation event
+    {
+        canPerfectBlock = false;
+        Debug.Log("Perfect block window closed.");
     }
 
     public void JumpAttack()
@@ -137,6 +157,12 @@ public class PlayerCombat : MonoBehaviour
         else
         if (isBlocking && BlockCone(attackerPosition))
         {
+            if (canPerfectBlock)
+            {
+                Debug.Log("Perfect Block!");
+                playerAudio.PlayOneShot(blockClip); //later a different clip for perfect block
+                return 0f; // No damage taken on perfect block
+            }
             playerAudio.PlayOneShot(blockClip);
             return damageTaken * (1 - blockPercent / 100f); // Reduce damage if blocking and within block cone
         }

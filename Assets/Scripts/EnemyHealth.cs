@@ -8,13 +8,23 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioClip deathSfx;       
-    [SerializeField] private AudioSource sfxSource;    
+    [SerializeField] private AudioSource sfxSource;
 
+    [SerializeField] private EnemyUI healthBar;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
+    private void Awake()
+    {
+        if (healthBar != null)
+        {
+            healthBar = GetComponentInChildren<EnemyUI>();
+        }
+    }
     void Start()
     {
         health = maxHealth;
+        healthBar.UpdateHealthBar(health, maxHealth);
     }
 
     // Update is called once per frame
@@ -26,6 +36,7 @@ public class EnemyHealth : MonoBehaviour
     {   
         
         health -= damage;
+        healthBar.UpdateHealthBar(health, maxHealth);
         if (health <= 0)
         {
             PlayDeathSound();

@@ -10,6 +10,7 @@ public class InputManager : MonoBehaviour
     private PlayerLook look;
     private PlayerCombat combat;
     private PlayerHealth health;
+    public Animator anim;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -89,22 +90,24 @@ public class InputManager : MonoBehaviour
 
         onFoot.Attack.performed += ctx =>
         {
-            combat?.Attack(true);
+            anim.SetTrigger("Attack");
         };
 
         onFoot.PowerAttack.performed += ctx =>
         {
-            combat?.PowerAttack();
+            anim.SetTrigger("PowerAttack");
         };
 
         onFoot.Block.performed += ctx =>
         {
-            combat?.Block(true);
+            combat?.Block(true);  // start blocking when button pressed
+            anim.SetBool("isBlocking", true);
         };
 
         onFoot.Block.canceled += ctx =>
         {
             combat?.Block(false);  // stop blocking when button released
+            anim.SetBool("isBlocking", false);
         };
 
         onFoot.Heal.performed += ctx =>

@@ -97,3 +97,8 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+.plastic/plastic.changes
+.plastic/plastic.wktree
+Assets/MainMenu.unity.meta
+Assets/TestWorld/LowPolyDungeonsLite/Scenes/Settings/URP_DungeonsLite.asset.meta
+ProjectSettings/Packages/com.unity.probuilder/Settings.json
