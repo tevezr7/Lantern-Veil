@@ -30,6 +30,18 @@ public class DeathScreenController : MonoBehaviour
         }
     }
 
+    private void UnlockCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    private void LockCursor()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
 
 
     public void ShowDeathScreen()
@@ -37,15 +49,19 @@ public class DeathScreenController : MonoBehaviour
         if (isShowing) return;
         isShowing = true;
 
-        if (!root.activeSelf) root.SetActive(true);
+        UnlockCursor();
 
-        if (sfxSource != null && deathSfx != null)
+       
+        if (sfxSource && deathSfx)
         {
+            sfxSource.ignoreListenerPause = true; 
             sfxSource.PlayOneShot(deathSfx);
         }
 
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
         StartCoroutine(FadeIn());
     }
+
 
 
     System.Collections.IEnumerator FadeIn()

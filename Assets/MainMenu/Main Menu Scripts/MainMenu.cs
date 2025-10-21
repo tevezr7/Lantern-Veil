@@ -7,8 +7,8 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private string gameSceneName = "Lantern-Veil"; 
 
     [Header("Panels")]
-    [SerializeField] private GameObject mainButtonsGroup;   // assign MenuButtons here
-    [SerializeField] private GameObject optionsPanel;       // assign OptionsPanel here
+    [SerializeField] private GameObject mainButtonsGroup;   
+    [SerializeField] private GameObject optionsPanel;       
 
     // --- Buttons ---
     public void PlayGame()

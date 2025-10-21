@@ -3,7 +3,10 @@ using UnityEngine;
 public class PotionInventory : MonoBehaviour
 {
     public int potion_counter;
-    
+
+    [SerializeField] private AudioClip drinkPotionSfx;     
+    [SerializeField] private AudioSource sfxSource;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,9 +33,24 @@ public class PotionInventory : MonoBehaviour
         if (potion_counter > 0)
         {
             potion_counter--;
+            PlayDrinkPotionSound();
             var ui = GetComponentInChildren<PlayerUI>();
             if (ui != null)
                 ui.UpdatePotionCount();
+        }
+    }
+
+    private void PlayDrinkPotionSound()
+    {
+        if (drinkPotionSfx == null) return;
+
+        if (sfxSource != null)
+        {
+            sfxSource.PlayOneShot(drinkPotionSfx);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(drinkPotionSfx, transform.position);
         }
     }
 }
