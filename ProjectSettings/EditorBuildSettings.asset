@@ -6,10 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/MainMenu/MainMenu.unity
-    guid: b4559f15f927d4a488c2d35dd513eb6e
-  - enabled: 1
-    path: Assets/Lantern-Veil.unity
-    guid: a5de63782bcb0094cb3be30bcfe838fe
+    path: Assets/Scenes/SampleScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects: {}
-  m_UseUCBPForAssetBundles: 0
