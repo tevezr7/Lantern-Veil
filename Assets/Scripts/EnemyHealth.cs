@@ -1,10 +1,19 @@
 using UnityEngine;
+using System.Collections;
+
 
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Health")]
     public float health;
     public float maxHealth; //will inherit from prefab / child class
+    public event System.Action<EnemyHealth> OnDeath; 
+
+    [Header("Hit Reaction")]
+    public bool canBeStaggered;
+    public bool isBurning;
+    public bool isBurnable;
+    private Coroutine BurnCoroutine;
 
     [Header("Audio")]
     [SerializeField] private AudioClip deathSfx;       
@@ -44,6 +53,41 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
+    public void StartBurning(int DamagePerSecond)
+    {
+        isBurning = true;
+        if (BurnCoroutine != null)
+        {
+            StopCoroutine(BurnCoroutine); // stop any existing burn coroutine if already burning
+        }
+        BurnCoroutine = StartCoroutine(BurnDamage(DamagePerSecond)); // start the burn damage coroutine
+    }
+
+    private IEnumerator BurnDamage(int DamagePerSecond)
+    {
+       float minTime = 1f / DamagePerSecond; // time interval between damage ticks
+       WaitForSeconds wait = new WaitForSeconds(minTime); 
+       int damageTick = Mathf.FloorToInt(minTime) + 1; // damage per tick
+       TakeDamage(damageTick, transform.position); // initial damage tick
+       while (isBurning)
+       {
+            yield return wait; // wait for the next tick
+            TakeDamage(damageTick, transform.position); // apply damage per tick
+       }
+    }
+
+    public void StopBurning()
+    {
+        isBurning = false;
+        if (BurnCoroutine != null)
+        {
+            StopCoroutine(BurnCoroutine);
+        }
+    }
+    void Die()
+    {
+        OnDeath?.Invoke(this); //death event, checks for subscribers
+    }
     private void PlayDeathSound()
     {
         if (deathSfx == null) return;
