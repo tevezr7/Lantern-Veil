@@ -150,6 +150,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Potion
   useEvents: 0
-  prompt: Pick up
+  prompt: Press F to pick up
   pickupSfx: {fileID: 8300000, guid: c8394f5df6f717f459a8adb0607622a6, type: 3}
   sfxSource: {fileID: 0}
