@@ -80,18 +80,39 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage (float damage, Vector3 attackerPosition)
+    public void TakeDamage(float damage, Vector3 attackerPosition)
     {
         lastDamageTaken = damage;
         if (playerCombat != null)
-        {
             damage = playerCombat.PreventDamage(damage, attackerPosition);
+        if (damage <= 0f) return;
+
+        health -= damage;
+        lerpTimer = 0f;
+        if (playerAudio && damageClip) playerAudio.PlayOneShot(damageClip);
+
+#if UNITY_2023_1_OR_NEWER
+        var flash = Object.FindAnyObjectByType<DamageFlash>();
+#else
+    var flash = FindObjectOfType<DamageFlash>();
+#endif
+        if (flash != null)
+            flash.Hit(damage / Mathf.Max(1f, maxHealth));
+#if UNITY_2023_1_OR_NEWER
+        var shaker = Object.FindAnyObjectByType<CameraShaker>();
+#else
+    var shaker = FindObjectOfType<CameraShaker>();
+#endif
+        if (shaker != null)
+        {
+            // Scale shake by damage percentage (clamped)
+            float intensity = Mathf.Clamp01(damage / Mathf.Max(1f, maxHealth));
+            float amp = Mathf.Lerp(0.04f, 0.12f, intensity);   // min..max amplitude
+            float dur = Mathf.Lerp(0.08f, 0.18f, intensity);   // min..max duration
+            shaker.Shake(amp, dur);
         }
-        if (damage <= 0f) return; // no damage taken   
-        health -= damage; 
-        lerpTimer = 0f; 
-        playerAudio.PlayOneShot(damageClip);
     }
+
 
     public void TakeDamage(float damage) // overload for when attacker position is unknown, unity Events handling
     {
