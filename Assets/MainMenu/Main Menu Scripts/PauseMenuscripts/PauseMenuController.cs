@@ -53,6 +53,9 @@ public class PauseMenuController : MonoBehaviour
 
     void Update()
     {
+        
+        if (InventoryScreenController.EscRecentlyConsumed)
+            return;
 
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PotionInventory : MonoBehaviour
@@ -6,6 +7,9 @@ public class PotionInventory : MonoBehaviour
 
     [SerializeField] private AudioClip drinkPotionSfx;     
     [SerializeField] private AudioSource sfxSource;
+
+    public Action<int> OnPotionChanged;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,6 +26,8 @@ public class PotionInventory : MonoBehaviour
     public void AddPotion()
     {
         potion_counter++;
+        OnPotionChanged?.Invoke(potion_counter); 
+
 
         var ui = GetComponentInChildren<PlayerUI>();
         if (ui != null)
@@ -33,6 +39,7 @@ public class PotionInventory : MonoBehaviour
         if (potion_counter > 0)
         {
             potion_counter--;
+            OnPotionChanged?.Invoke(potion_counter); 
             PlayDrinkPotionSound();
             var ui = GetComponentInChildren<PlayerUI>();
             if (ui != null)
