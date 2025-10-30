@@ -51,14 +51,24 @@ public class DeathScreenController : MonoBehaviour
 
         UnlockCursor();
 
-       
-        if (sfxSource && deathSfx)
+        AudioListener.pause = true;
+
+        if (sfxSource)
         {
-            sfxSource.ignoreListenerPause = true; 
+            sfxSource.ignoreListenerPause = true;  
             sfxSource.PlayOneShot(deathSfx);
         }
 
-        if (!gameObject.activeSelf) gameObject.SetActive(true);
+#if UNITY_2023_1_OR_NEWER
+        var low = Object.FindAnyObjectByType<LowHealthFX>(FindObjectsInactive.Include);
+#else
+    var low = FindObjectOfType<LowHealthFX>();
+#endif
+        if (low != null)
+            low.ForceClear();
+
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
         StartCoroutine(FadeIn());
     }
 
@@ -91,20 +101,23 @@ public class DeathScreenController : MonoBehaviour
         }
     }
 
-  
+
     public void Retry()
     {
+        AudioListener.pause = false;   
         Time.timeScale = 1f;
-        Scene current = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(current.buildIndex);
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex);
     }
 
     public void MainMenu()
     {
+        AudioListener.pause = false;   
         Time.timeScale = 1f;
         if (!string.IsNullOrEmpty(mainMenuSceneName))
             SceneManager.LoadScene(mainMenuSceneName);
     }
+
 
     public void QuitGame()
     {

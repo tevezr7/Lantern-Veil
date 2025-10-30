@@ -127,4 +127,34 @@ public class LowHealthFX : MonoBehaviour
             masterMixer.SetFloat(cutoffParam, currentCutoff);
         }
     }
+    public void ForceClear()
+    {
+       
+        targetAlpha = 0f;
+        currentAlpha = 0f;
+        if (overlay)
+        {
+            var c = overlay.color; c.a = 0f; overlay.color = c;
+        }
+
+       
+        if (heartbeat)
+        {
+            heartbeat.volume = 0f;
+            heartbeat.Stop();
+        }
+
+       
+        if (useMixerLowpass && masterMixer)
+            masterMixer.SetFloat(cutoffParam, maxCutoff);
+    }
+
+    void OnDisable()
+    {
+        
+        if (heartbeat) heartbeat.Stop();
+        if (useMixerLowpass && masterMixer)
+            masterMixer.SetFloat(cutoffParam, maxCutoff);
+    }
+
 }
