@@ -28,6 +28,7 @@ public class PlayerMotor : MonoBehaviour
     [Header("Block & Attack")]
     public float blockSpeedMultiplier = 0.5f; // speed is reduced when blocking
     public float attackSpeedMultiplier = 0.8f; // speed is reduced when attacking
+    public float powerAttackSpeedMultiplier = 0.6f; // speed is further reduced when power attacking
 
     private Vector3 dodgeDir;
     private float dodgeEndTime;
@@ -91,6 +92,8 @@ public class PlayerMotor : MonoBehaviour
             // Adjust speed based on combat state
             if (combat.IsBlocking)
                 speed = baseSpeed * blockSpeedMultiplier;
+            else if (combat.IsPowerAttacking)
+                speed = baseSpeed * powerAttackSpeedMultiplier;
             else if (combat.IsAttacking)
                 speed = baseSpeed * attackSpeedMultiplier;
             else

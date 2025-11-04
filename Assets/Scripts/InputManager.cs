@@ -10,6 +10,7 @@ public class InputManager : MonoBehaviour
     private PlayerLook look;
     private PlayerCombat combat;
     private PlayerHealth health;
+    private FlameThrower flameThrower;
     public Animator anim;
 
     [Header("Audio")]
@@ -56,6 +57,7 @@ public class InputManager : MonoBehaviour
         look = GetComponent<PlayerLook>();
         combat = GetComponent<PlayerCombat>();
         health = GetComponent<PlayerHealth>(); 
+        flameThrower = GetComponent<FlameThrower>();
 
         if (motor == null) Debug.LogError("[InputManager] PlayerMotor not found.");
         if (look == null) Debug.LogError("[InputManager] PlayerLook not found.");
@@ -113,6 +115,15 @@ public class InputManager : MonoBehaviour
         onFoot.Heal.performed += ctx =>
         {
             health?.DrinkPotion();
+        };
+
+        onFoot.Spell.performed += ctx =>
+        {
+           anim.SetBool("isCasting", true);
+        };
+        onFoot.Spell.canceled += ctx =>
+        {
+            anim.SetBool("isCasting", false);
         };
     }
 

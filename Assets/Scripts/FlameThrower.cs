@@ -20,6 +20,15 @@ public class FlameThrower : MonoBehaviour //referencing Llam academy flame throw
 
     private Dictionary<EnemyAI, ParticleSystem> EnemyParticleSystems = new();
 
+    private void Start() //temporary to see if flame thrower works
+    {
+        if (ShootingSystem)
+        {
+            ShootingSystem.gameObject.SetActive(true);
+            ShootingSystem.Play(true);
+            Debug.Log(" FlameThrower test: Playing fire!");
+        }
+    }
     private void Awake()
     {
         onFirePool = new ObjectPool<ParticleSystem>(CreateOnFireSystem); // Initialize the pool with a method to create new particle systems
@@ -56,13 +65,13 @@ public class FlameThrower : MonoBehaviour //referencing Llam academy flame throw
         }
     }
 
-    private void Shoot()
+    public void SpellStartEvent()
     {
         ShootingSystem.gameObject.SetActive(true);
         flameRadius.gameObject.SetActive(true);
     }
 
-    private void StopShooting()
+    public void SpellEndEvent()
     {
         ShootingSystem.gameObject.SetActive(false);
         flameRadius.gameObject.SetActive(false);

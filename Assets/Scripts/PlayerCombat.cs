@@ -7,19 +7,20 @@ public class PlayerCombat : MonoBehaviour
     private EnemyHealth enemyHealth;
     private bool isBlocking;
     private bool isAttacking;
+    private bool isPowerAttacking;
     public AudioSource playerAudio;
     public AudioClip blockClip;
     public AudioClip swingClip;
 
     [Header("Attack")]
-    public float attackWindup = 0.2f; //still haven't implemented
-    public float attackDelay = 0.5f; 
     public float attackDamage = 25f;
-    private float nextAttack = 0f; // time when next attack is allowed
     public float attackRange = 2f;
     public float attackRadius = 1.5f;
     public float powerMult = 1.2f;
+    private float currentDamageMult = 1f; // 1 = normal, powerMult when powered
+
     public bool IsAttacking => isAttacking;
+    public bool IsPowerAttacking => isPowerAttacking;
     public LayerMask attackLayerMask; // layers that can be hit by attacks
 
     [Header("Blocking")]
@@ -57,6 +58,19 @@ public class PlayerCombat : MonoBehaviour
 
     }
 
+    public void PAttackStartEvent() 
+    { 
+        isPowerAttacking = true; 
+        currentDamageMult = powerMult;
+    }
+    public void PAttackEndEvent()
+    {
+        isPowerAttacking = false;
+        currentDamageMult = 1f;
+    }
+    public void AttackStartEvent() => isAttacking = true;
+    public void AttackEndEvent() => isAttacking = false;
+
     public void AttackEvent() //called by animation event
     {
         Attack(true);
@@ -64,12 +78,9 @@ public class PlayerCombat : MonoBehaviour
 
     public void Attack(bool state)
     {
-        //still need to implement windup and attack animation
         isAttacking = state;
-        if (!isAttacking) return;
-        if (Time.time < nextAttack) return; // still in cooldown
-
-        nextAttack = Time.time + attackDelay; // set next attack time
+        if (!isAttacking && !isPowerAttacking) return;
+        
         Vector3 origin = transform.position + transform.forward * attackRange + Vector3.up; // Adjust for player height
         Collider[] hitColliders = Physics.OverlapSphere(origin, attackRadius, attackLayerMask); // Detect enemies in attack radius
         playerAudio.PlayOneShot(swingClip);
@@ -79,14 +90,14 @@ public class PlayerCombat : MonoBehaviour
             EnemyHealth enemyHealth = hitCollider.GetComponentInParent<EnemyHealth>(); 
             if (enemyHealth != null) // Check if the collider has an EnemyHealth component
             {
-                enemyHealth.TakeDamage(attackDamage, transform.position); // Apply damage
+                enemyHealth.TakeDamage(attackDamage * currentDamageMult, transform.position); // Apply damage
             }
         }
     }
 
     public void BlockEvent() //called by animation event
     {
-        Block(true);
+        
     }
 
     public void Block(bool state)
@@ -94,23 +105,20 @@ public class PlayerCombat : MonoBehaviour
         isBlocking = state; //not sure which script to implement in, but enemy recoil after being blocked would be nice
     }
 
-    
+
 
     public void PowerAttack()
-    {
-        //longer windup animation when we get the animations. everything rn is temporary until we have animations
-
-        
-
-        //future code to break blocks or stagger enemies
-        
+    { 
+        //if we add block breaking attacks later, we can add a parameter here to specify that blockbreaking is true.
+        isPowerAttacking = true;
+        currentDamageMult = powerMult;
     }
 
 
 
     //power attacks that break blocks? 
 
-    
+
 
     public void PerfectStart()   // called by animation event
     {
