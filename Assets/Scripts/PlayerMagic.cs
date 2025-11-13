@@ -36,7 +36,6 @@ public class PlayerMagic : MonoBehaviour
 
     public void UpdateMagicUI()
     {
-        Debug.Log("Magic: " + magic);
         float fillF = frontMagicBar.fillAmount;
         float fillB = backMagicBar.fillAmount;
         float mFraction = magic / maxMagic; //magic fraction, value between 0 and 1
@@ -65,5 +64,14 @@ public class PlayerMagic : MonoBehaviour
             magic -= amount;
             lastSpellCost = amount;
             lerpTimer = 0f; //reset timer for magic bar animation
+    }
+
+    public bool TryUseMagic(float amount)
+    {
+        if (magic < amount)
+            return false;
+
+        UseMagic(amount);       // uses YOUR bar animation & lerp logic
+        return true;
     }
 }

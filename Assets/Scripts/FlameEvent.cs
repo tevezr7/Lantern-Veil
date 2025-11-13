@@ -1,45 +1,53 @@
-using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;  
-using System.Collections;
 
 public class FlameEvent : MonoBehaviour
 {
-    public delegate void EnemyEnteredEvent(EnemyAI enemy); //
-    public delegate void EnemyExitedEvent(EnemyAI enemy); 
+    // Use events to encapsulate subscription (other scripts will += / -=)
+    public event Action<EnemyAI> OnEnemyEnter;
+    public event Action<EnemyAI> OnEnemyExit;
 
-    public EnemyEnteredEvent OnEnemyEnter; // Event triggered when an enemy enters the flamethrower area
-    public EnemyExitedEvent OnEnemyExit; // Event triggered when an enemy exits the flamethrower area
+    private readonly List<EnemyAI> enemiesInRange = new List<EnemyAI>();
 
-    private List<EnemyAI> enemiesInRange = new List<EnemyAI>();
-    
+    // Expose read-only view for other systems that want to query current enemies
+    public IEnumerable<EnemyAI> EnemiesInRange => enemiesInRange;
+
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent<EnemyAI>(out EnemyAI enemy)) // Check if the collider belongs to an enemy
+        Debug.Log("FlameEvent ENTER: " + other.name);
+        var ai = other.GetComponentInParent<EnemyAI>();
+        if (ai) Debug.Log("EnemyAI found: " + ai.name);
+        if (other.TryGetComponent<EnemyAI>(out EnemyAI enemy))
         {
-            enemiesInRange.Add(enemy); // Add enemy to the list
-            OnEnemyEnter?.Invoke(enemy); // Trigger the event when an enemy enters
+            // avoid duplicate entries when an enemy has multiple colliders
+            if (enemiesInRange.Contains(enemy)) return;
+
+            enemiesInRange.Add(enemy);
+            OnEnemyEnter?.Invoke(enemy);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.TryGetComponent<EnemyAI>(out EnemyAI enemy)) // Check if the collider belongs to an enemy
+        if (other.TryGetComponent<EnemyAI>(out EnemyAI enemy))
         {
-            enemiesInRange.Remove(enemy); // Remove enemy from the list
-            OnEnemyExit?.Invoke(enemy); // Trigger the event when an enemy exits
+            if (!enemiesInRange.Contains(enemy)) return;
+
+            enemiesInRange.Remove(enemy);
+            OnEnemyExit?.Invoke(enemy);
         }
     }
 
     private void OnDestroy()
     {
-        foreach(EnemyAI enemy in enemiesInRange)
+        // Make a copy to be safe if listeners modify the list during callbacks
+        var copy = enemiesInRange.ToArray();
+        foreach (var enemy in copy)
         {
-            OnEnemyExit?.Invoke(enemy); // Ensure exit event is triggered for all enemies still in range
+            OnEnemyExit?.Invoke(enemy);
         }
 
-        enemiesInRange.Clear(); // Clear the list
+        enemiesInRange.Clear();
     }
 }
-
-

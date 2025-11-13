@@ -57,7 +57,7 @@ public class InputManager : MonoBehaviour
         look = GetComponent<PlayerLook>();
         combat = GetComponent<PlayerCombat>();
         health = GetComponent<PlayerHealth>(); 
-        flameThrower = GetComponent<FlameThrower>();
+        flameThrower = GetComponentInChildren<FlameThrower>();
 
         if (motor == null) Debug.LogError("[InputManager] PlayerMotor not found.");
         if (look == null) Debug.LogError("[InputManager] PlayerLook not found.");
@@ -119,10 +119,12 @@ public class InputManager : MonoBehaviour
 
         onFoot.Spell.performed += ctx =>
         {
-           anim.SetBool("isCasting", true);
+            flameThrower?.StartFlame();  // on press | update with if statement later for checking which spell is selected
+            anim.SetBool("isCasting", true);
         };
         onFoot.Spell.canceled += ctx =>
         {
+            flameThrower?.StopFlame();   // on release
             anim.SetBool("isCasting", false);
         };
     }
