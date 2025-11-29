@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;   // <--- add this so we can use IEnumerator
 
 public class PotionInventory : MonoBehaviour
 {
@@ -35,6 +36,21 @@ public class PotionInventory : MonoBehaviour
 
     void Start()
     {
+        // First immediate refresh (for when everything is already set up)
+        RefreshUI();
+
+        // Then do a delayed refresh so that if the InventoryUIController
+        // was created AFTER us (like when coming from the main menu),
+        // it still gets the correct potion count.
+        StartCoroutine(DelayedRefreshUI());
+    }
+
+    private IEnumerator DelayedRefreshUI()
+    {
+        // Wait one frame so all other Awake/Start calls (like InventoryUIController)
+        // have a chance to run and set their static Instance.
+        yield return null;
+
         RefreshUI();
     }
 

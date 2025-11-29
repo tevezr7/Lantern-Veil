@@ -31,7 +31,7 @@ public class SceneFader : MonoBehaviour
     private IEnumerator FadeOutAndLoad(string sceneName)
     {
         yield return Fade(cg.alpha, 1f, setBlockers: true); 
-        var op = SceneManager.LoadSceneAsync(sceneName);
+        var op = SceneManager.LoadSceneAsync((sceneName));
         while (!op.isDone) yield return null;
         yield return Fade(1f, 0f, setBlockers: false);      
     }

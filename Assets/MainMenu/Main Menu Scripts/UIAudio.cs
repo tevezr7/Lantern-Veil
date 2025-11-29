@@ -8,6 +8,7 @@ public class UIAudio : MonoBehaviour
     [Header("General UI SFX")]
     public AudioClip hover;
     public AudioClip click;
+    public AudioClip playButton;
 
     [Header("Inventory Drag/Drop SFX")]
     public AudioClip dragStart;
@@ -27,6 +28,9 @@ public class UIAudio : MonoBehaviour
 
     void Awake()
     {
+
+        Debug.Log("UIAudio instance: " + I);
+
         if (I != null)
         {
             Destroy(gameObject);
@@ -91,6 +95,10 @@ public class UIAudio : MonoBehaviour
     public void PlayPotionFail()
     {
         if (potionFail) src.PlayOneShot(potionFail);
+    }
+    public void PlayPlayButton()
+    {
+        if (playButton) src.PlayOneShot(playButton);
     }
 
 
