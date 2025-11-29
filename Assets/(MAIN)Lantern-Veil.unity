@@ -9802,7 +9802,7 @@ PrefabInstance:
     - target: {fileID: 6272612586025087359, guid: 70a84e3c172d2f445acd2fd6685ed24b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CloseControls
+      value: BackToPauseMenu
       objectReference: {fileID: 0}
     - target: {fileID: 6357514503161382822, guid: 70a84e3c172d2f445acd2fd6685ed24b,
         type: 3}
@@ -10044,7 +10044,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6583662415442201159, guid: 70a84e3c172d2f445acd2fd6685ed24b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 770635542693014546, guid: 70a84e3c172d2f445acd2fd6685ed24b,
