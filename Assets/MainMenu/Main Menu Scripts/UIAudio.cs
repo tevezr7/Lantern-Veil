@@ -4,14 +4,35 @@ using UnityEngine;
 public class UIAudio : MonoBehaviour
 {
     public static UIAudio I;
+
+    [Header("General UI SFX")]
     public AudioClip hover;
     public AudioClip click;
+
+    [Header("Inventory Drag/Drop SFX")]
+    public AudioClip dragStart;
+    public AudioClip dropSuccess;
+    public AudioClip dropFail;
+
+    [Header("Inventory Open/Close SFX")]
+    public AudioClip inventoryOpen;
+    public AudioClip inventoryClose;
+
+    [Header("Potion Use SFX")]
+    public AudioClip potionUse;
+    public AudioClip potionFail;
+
 
     AudioSource src;
 
     void Awake()
     {
-        if (I != null) { Destroy(gameObject); return; }
+        if (I != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         I = this;
         DontDestroyOnLoad(gameObject);
 
@@ -21,6 +42,56 @@ public class UIAudio : MonoBehaviour
         src.spatialBlend = 0f; // 2D
     }
 
-    public void PlayHover() { if (hover) src.PlayOneShot(hover); }
-    public void PlayClick() { if (click) src.PlayOneShot(click); }
+    // ----------------- Basic UI -----------------
+
+    public void PlayHover()
+    {
+        if (hover) src.PlayOneShot(hover);
+    }
+
+    public void PlayClick()
+    {
+        if (click) src.PlayOneShot(click);
+    }
+
+    // ------------- Inventory Drag/Drop ----------
+
+    public void PlayDragStart()
+    {
+        if (dragStart) src.PlayOneShot(dragStart);
+    }
+
+    public void PlayDropSuccess()
+    {
+        if (dropSuccess) src.PlayOneShot(dropSuccess);
+    }
+
+    public void PlayDropFail()
+    {
+        if (dropFail) src.PlayOneShot(dropFail);
+    }
+
+    // -------- Inventory Open / Close ------------
+
+    public void PlayInventoryOpen()
+    {
+        if (inventoryOpen) src.PlayOneShot(inventoryOpen);
+    }
+
+    public void PlayInventoryClose()
+    {
+        if (inventoryClose) src.PlayOneShot(inventoryClose);
+    }
+
+    public void PlayPotionUse()
+    {
+        if (potionUse) src.PlayOneShot(potionUse);
+    }
+
+    public void PlayPotionFail()
+    {
+        if (potionFail) src.PlayOneShot(potionFail);
+    }
+
+
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem;
@@ -6,17 +6,22 @@ using UnityEngine.InputSystem;
 public class InventoryScreenController : MonoBehaviour
 {
     [Header("Links")]
-    [SerializeField] private CanvasGroup canvasGroup;   
-    [SerializeField] private GameObject root;          
-    [SerializeField] private Image potionIcon;          
-    [SerializeField] private TMP_Text potionCountText;  
-    [SerializeField] private Sprite potionSprite;      
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private GameObject root;
+    [SerializeField] private Image potionIcon;
+    [SerializeField] private TMP_Text potionCountText;
+    [SerializeField] private Sprite potionSprite;
     [SerializeField] private PotionInventory potionInventory;
 
     [Header("Behavior")]
     [SerializeField] private bool pauseOnOpen = true;
-    [SerializeField] private KeyCode fallbackKey = KeyCode.B; 
+    [SerializeField] private KeyCode fallbackKey = KeyCode.B;
     [SerializeField] private float fade = 0.15f;
+
+    [Header("Inventory Music")]
+    [SerializeField] private AudioSource inventoryMusicSource;  // assign in Inspector
+    [SerializeField] private AudioClip inventoryMusicClip;      // assign track here
+    [SerializeField][Range(0f, 1f)] private float inventoryMusicVolume = 0.5f;
 
     bool isOpen;
 
@@ -34,16 +39,14 @@ public class InventoryScreenController : MonoBehaviour
 #endif
         }
 
-       
         if (potionIcon && potionSprite) potionIcon.sprite = potionSprite;
 
-       
+        // start hidden
         root.SetActive(false);
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-       
         if (potionInventory != null)
             potionInventory.OnPotionChanged += OnPotionChanged;
     }
@@ -56,18 +59,16 @@ public class InventoryScreenController : MonoBehaviour
 
     void Update()
     {
-        
+        // Handle ESC to close when open
         if (isOpen)
         {
-            
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 Close();
-               
                 MarkEscConsumed();
                 return;
             }
-         
+
             if (Keyboard.current == null && Input.GetKeyDown(KeyCode.Escape))
             {
                 Close();
@@ -76,45 +77,55 @@ public class InventoryScreenController : MonoBehaviour
             }
         }
 
-        
+        // Handle open/close (B key or fallback)
         if (Keyboard.current == null)
         {
-            
             if (Input.GetKeyDown(fallbackKey)) Toggle();
         }
         else
         {
-           
             if (Keyboard.current.bKey.wasPressedThisFrame) Toggle();
         }
 
-        
+        // Smooth fade
         float target = isOpen ? 1f : 0f;
         if (canvasGroup)
+        {
             canvasGroup.alpha = Mathf.MoveTowards(
-                canvasGroup.alpha, target,
+                canvasGroup.alpha,
+                target,
                 Time.unscaledDeltaTime / Mathf.Max(0.0001f, fade)
             );
+        }
     }
+
+    // -------------------------------------------------------------------------
+    // ESC consumption
+    // -------------------------------------------------------------------------
 
     static float _escConsumedUntil = -1f;
     static void MarkEscConsumed()
     {
-        _escConsumedUntil = Time.unscaledTime + 0.05f; 
+        _escConsumedUntil = Time.unscaledTime + 0.05f;
     }
     public static bool EscRecentlyConsumed =>
         Time.unscaledTime <= _escConsumedUntil;
 
+    // -------------------------------------------------------------------------
+    // Potion UI
+    // -------------------------------------------------------------------------
 
     void OnPotionChanged(int count)
     {
         if (potionCountText) potionCountText.text = "x" + count;
     }
 
+    // -------------------------------------------------------------------------
+    // Open / Close / Toggle
+    // -------------------------------------------------------------------------
+
     public void Toggle()
     {
-        
-
         if (isOpen) Close();
         else Open();
     }
@@ -124,7 +135,11 @@ public class InventoryScreenController : MonoBehaviour
         if (isOpen) return;
         isOpen = true;
 
-        
+        // 🔊 Inventory open UI SFX
+        if (UIAudio.I != null)
+            UIAudio.I.PlayInventoryOpen();
+
+        // Update potion count text
         if (potionCountText && potionInventory)
             potionCountText.text = "x" + potionInventory.potion_counter;
 
@@ -135,11 +150,27 @@ public class InventoryScreenController : MonoBehaviour
         if (pauseOnOpen) Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        // 🎵 Start inventory music
+        if (inventoryMusicSource != null && inventoryMusicClip != null)
+        {
+            if (inventoryMusicSource.clip != inventoryMusicClip)
+                inventoryMusicSource.clip = inventoryMusicClip;
+
+            inventoryMusicSource.volume = inventoryMusicVolume;
+            inventoryMusicSource.loop = true;
+            inventoryMusicSource.Play();
+        }
     }
 
     public void Close()
     {
         if (!isOpen) return;
+
+        // 🔊 Inventory close UI SFX
+        if (UIAudio.I != null)
+            UIAudio.I.PlayInventoryClose();
+
         isOpen = false;
 
         canvasGroup.interactable = false;
@@ -149,19 +180,27 @@ public class InventoryScreenController : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
+        // 🎵 Stop inventory music
+        if (inventoryMusicSource != null && inventoryMusicSource.isPlaying)
+        {
+            inventoryMusicSource.Stop();
+        }
+
         StartCoroutine(DeactivateWhenInvisible());
     }
 
     System.Collections.IEnumerator DeactivateWhenInvisible()
     {
-      
         while (canvasGroup && canvasGroup.alpha > 0.001f)
             yield return null;
 
         if (root) root.SetActive(false);
     }
 
-    
+    // -------------------------------------------------------------------------
+    // Input System callback
+    // -------------------------------------------------------------------------
+
     public void OnInventory(InputAction.CallbackContext ctx)
     {
         if (!ctx.started) return;

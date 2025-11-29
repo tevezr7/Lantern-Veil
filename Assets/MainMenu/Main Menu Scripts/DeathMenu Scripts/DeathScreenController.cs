@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class DeathScreenController : MonoBehaviour
@@ -8,9 +8,9 @@ public class DeathScreenController : MonoBehaviour
     [SerializeField] private AudioClip deathSfx;
 
     [Header("Links")]
-    [SerializeField] private CanvasGroup canvasGroup;   
-    [SerializeField] private GameObject root;          
-    [SerializeField] private string mainMenuSceneName = "MainMenu"; 
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private GameObject root;
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     [Header("Settings")]
     [SerializeField] private float fadeDuration = 0.6f;
@@ -42,37 +42,46 @@ public class DeathScreenController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-
-
     public void ShowDeathScreen()
     {
         if (isShowing) return;
         isShowing = true;
 
+        // 🔒 Disable inventory so B can't toggle it and unpause the game
+#if UNITY_2023_1_OR_NEWER
+        var inventory = Object.FindAnyObjectByType<InventoryScreenController>(FindObjectsInactive.Include);
+#else
+        var inventory = FindObjectOfType<InventoryScreenController>();
+#endif
+        if (inventory != null)
+        {
+            inventory.enabled = false;
+        }
+
         UnlockCursor();
 
+        // Pause all game audio (except our death SFX)
         AudioListener.pause = true;
 
         if (sfxSource)
         {
-            sfxSource.ignoreListenerPause = true;  
+            sfxSource.ignoreListenerPause = true;
             sfxSource.PlayOneShot(deathSfx);
         }
 
 #if UNITY_2023_1_OR_NEWER
         var low = Object.FindAnyObjectByType<LowHealthFX>(FindObjectsInactive.Include);
 #else
-    var low = FindObjectOfType<LowHealthFX>();
+        var low = FindObjectOfType<LowHealthFX>();
 #endif
         if (low != null)
             low.ForceClear();
 
         if (!gameObject.activeSelf)
             gameObject.SetActive(true);
+
         StartCoroutine(FadeIn());
     }
-
-
 
     System.Collections.IEnumerator FadeIn()
     {
@@ -81,7 +90,6 @@ public class DeathScreenController : MonoBehaviour
         float t = 0f;
         if (canvasGroup) canvasGroup.alpha = 0f;
 
-        
         while (t < fadeDuration)
         {
             t += Time.unscaledDeltaTime;
@@ -90,7 +98,7 @@ public class DeathScreenController : MonoBehaviour
             yield return null;
         }
 
-      
+        // Fully paused once death screen is visible
         Time.timeScale = 0f;
 
         if (canvasGroup)
@@ -101,10 +109,9 @@ public class DeathScreenController : MonoBehaviour
         }
     }
 
-
     public void Retry()
     {
-        AudioListener.pause = false;   
+        AudioListener.pause = false;
         Time.timeScale = 1f;
         var scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.buildIndex);
@@ -112,12 +119,11 @@ public class DeathScreenController : MonoBehaviour
 
     public void MainMenu()
     {
-        AudioListener.pause = false;   
+        AudioListener.pause = false;
         Time.timeScale = 1f;
         if (!string.IsNullOrEmpty(mainMenuSceneName))
             SceneManager.LoadScene(mainMenuSceneName);
     }
-
 
     public void QuitGame()
     {
