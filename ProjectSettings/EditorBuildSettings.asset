@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/MainMenu.unity
     guid: 82682bda034e4814d8b907dd58078535
   - enabled: 1
-    path: Assets/(MAIN)Lantern-Veil.unity
-    guid: 3ba058b78174e8b4ca94b1261b3d1087
+    path: Assets/Arena.unity
+    guid: 998ef857fe4ccf24ea84f9b17be570e4
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

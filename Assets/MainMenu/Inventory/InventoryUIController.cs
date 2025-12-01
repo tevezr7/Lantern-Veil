@@ -6,28 +6,38 @@ public class InventoryUIController : MonoBehaviour
     public static InventoryUIController Instance { get; private set; }
 
     [Header("Slots")]
-    [SerializeField] private InventorySlotUI[] slots;   // assigned in Inspector or auto-found
+    [SerializeField] private InventorySlotUI[] slots;          // All slots in the grid
+    [SerializeField] private InventorySlotUI healthPotionSlot; // Starting slot for HEALTH potions
+    [SerializeField] private InventorySlotUI magicPotionSlot;  // Starting slot for MAGIC potions
+
+    [Header("Icons")]
+    [SerializeField] private Sprite healthPotionSprite;        // icon for health potions
+    [SerializeField] private Sprite magicPotionSprite;         // icon for magic potions
 
     [Header("Drag Visual")]
-    [SerializeField] private Canvas rootCanvas;         // main UI canvas (InventoryCanvas)
-    [SerializeField] private Image dragIconPrefab;      // optional, can create at runtime
+    [SerializeField] private Canvas rootCanvas;                // Main UI canvas (InventoryCanvas)
 
-    [Header("Gameplay")]
-    [SerializeField] private PotionInventory potionInventory;
-    [SerializeField] private PlayerHealth playerHealth;
+    [Header("Inventories")]
+    [SerializeField] private PotionInventory healthPotionInventory;
+    [SerializeField] private MagicPotionInventory magicPotionInventory;
 
-    private InventorySlotUI currentPotionSlot;          // where the stack currently lives
-    private InventorySlotUI draggingFrom;               // slot we started dragging from
-    private int currentPotionCount = 0;
+    // --- Internal state for the two stacks ---
+    private InventorySlotUI currentHealthSlot;
+    private InventorySlotUI currentMagicSlot;
+    private int healthCount = 0;
+    private int magicCount = 0;
 
-    // runtime drag ghost
+    // Drag state
+    private enum DragType { None, Health, Magic }
+    private DragType draggingType = DragType.None;
+    private InventorySlotUI draggingFrom;
     private Image dragIconInstance;
     private RectTransform dragIconRT;
     private bool isDragging = false;
 
     private void Awake()
     {
-        // basic singleton
+        // Singleton
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -35,112 +45,153 @@ public class InventoryUIController : MonoBehaviour
         }
         Instance = this;
 
-        // find slots if not assigned
+        // Auto-find slots
         if (slots == null || slots.Length == 0)
-        {
             slots = GetComponentsInChildren<InventorySlotUI>(true);
-        }
 
-        if (slots != null && slots.Length > 0)
-        {
-            currentPotionSlot = slots[0];   // default first slot
-        }
+        // Default starting slots
+        if (healthPotionSlot == null && slots != null && slots.Length > 0)
+            healthPotionSlot = slots[0];
 
-        if (!potionInventory)
-        {
-#if UNITY_2023_1_OR_NEWER
-            potionInventory = Object.FindAnyObjectByType<PotionInventory>();
-#else
-    potionInventory = FindObjectOfType<PotionInventory>();
-#endif
-        }
+        if (magicPotionSlot == null && slots != null && slots.Length > 1)
+            magicPotionSlot = slots[1];
 
-        if (!playerHealth)
-        {
-#if UNITY_2023_1_OR_NEWER
-            playerHealth = Object.FindAnyObjectByType<PlayerHealth>();
-#else
-    playerHealth = FindObjectOfType<PlayerHealth>();
-#endif
-        }
+        currentHealthSlot = healthPotionSlot;
+        currentMagicSlot = magicPotionSlot;
 
-
-        // make sure we know the canvas
+        // Canvas reference
         if (!rootCanvas)
             rootCanvas = GetComponentInParent<Canvas>();
 
         CreateDragIcon();
 
-        // initial display (no potions yet)
-        RefreshPotionDisplay(0);
+        // Initial display
+        ApplyCountsToSlots();
     }
 
     // -------------------------------------------------------------------------
-    // Called by PotionInventory whenever potion count changes
+    // Called by PotionInventory (Health)
+    // -------------------------------------------------------------------------
 
-    public void RefreshPotionDisplay(int totalPotions)
+    public void RefreshHealthPotionDisplay(int count)
     {
-        currentPotionCount = Mathf.Max(0, totalPotions);
+        healthCount = Mathf.Max(0, count);
+        ApplyCountsToSlots();
+    }
 
-        if (slots == null || slots.Length == 0)
-            return;
+    // Kept for backwards compatibility if something still calls this:
+    public void RefreshPotionDisplay(int count)
+    {
+        RefreshHealthPotionDisplay(count);
+    }
 
-        if (currentPotionSlot == null)
-            currentPotionSlot = slots[0];
+    // -------------------------------------------------------------------------
+    // Called by MagicPotionInventory (Magic)
+    // -------------------------------------------------------------------------
+
+    public void RefreshMagicPotionDisplay(int count)
+    {
+        magicCount = Mathf.Max(0, count);
+        ApplyCountsToSlots();
+    }
+
+    // -------------------------------------------------------------------------
+    // Assign counts + correct icon sprites to each slot
+    // -------------------------------------------------------------------------
+
+    private void ApplyCountsToSlots()
+    {
+        if (slots == null || slots.Length == 0) return;
 
         foreach (var s in slots)
         {
-            if (s == currentPotionSlot)
-                s.SetCount(currentPotionCount);
-            else
-                s.SetCount(0);
+            bool hasHealthHere = (s == currentHealthSlot && healthCount > 0);
+            bool hasMagicHere = (s == currentMagicSlot && magicCount > 0);
+
+            int displayCount = 0;
+            if (hasHealthHere) displayCount += healthCount;
+            if (hasMagicHere) displayCount += magicCount;
+
+            // Update count (this will show/hide the icon based on >0)
+            s.SetCount(displayCount);
+
+            // Now set the correct icon sprite
+            var iconImg = s.IconImage;
+            if (iconImg != null)
+            {
+                if (hasHealthHere && !hasMagicHere)
+                {
+                    iconImg.sprite = healthPotionSprite;
+                }
+                else if (!hasHealthHere && hasMagicHere)
+                {
+                    iconImg.sprite = magicPotionSprite;
+                }
+                else if (!hasHealthHere && !hasMagicHere)
+                {
+                    // No stack in this slot: optional – keep whatever sprite was last, or clear it:
+                    // iconImg.sprite = null;
+                }
+                // (We already prevent overlapping stacks, so hasHealthHere && hasMagicHere shouldn't happen.)
+            }
         }
     }
 
     // -------------------------------------------------------------------------
-    // Drag handling
+    // Drag handling (for both stacks)
+    // -------------------------------------------------------------------------
 
     public void BeginDrag(InventorySlotUI from)
     {
-        // Only allow drag if this slot holds our potion stack
         if (from == null || !from.HasItem) return;
-        if (from != currentPotionSlot) return;
+
+        // Decide what we’re dragging
+        if (from == currentHealthSlot && healthCount > 0)
+            draggingType = DragType.Health;
+        else if (from == currentMagicSlot && magicCount > 0)
+            draggingType = DragType.Magic;
+        else
+            return; // slot doesn’t belong to any active stack
 
         draggingFrom = from;
         isDragging = true;
 
-        // show drag ghost icon
+        // Show drag ghost icon with correct sprite based on WHAT we're dragging
         if (dragIconInstance != null)
         {
             dragIconInstance.enabled = true;
             dragIconInstance.color = new Color(1f, 1f, 1f, 0.9f);
 
-            // use the slot's actual icon sprite
-            var iconImg = from.IconImage;
-            if (iconImg != null && iconImg.sprite != null)
+            Sprite spriteToUse = null;
+            switch (draggingType)
             {
-                dragIconInstance.sprite = iconImg.sprite;
+                case DragType.Health:
+                    spriteToUse = healthPotionSprite;
+                    break;
+                case DragType.Magic:
+                    spriteToUse = magicPotionSprite;
+                    break;
+            }
+
+            if (spriteToUse != null)
+            {
+                dragIconInstance.sprite = spriteToUse;
                 dragIconInstance.preserveAspect = true;
                 dragIconInstance.SetNativeSize();
-
-                // optionally shrink a bit so it’s not huge
                 dragIconRT.sizeDelta *= 0.9f;
             }
         }
-
     }
 
     public void UpdateDrag(Vector2 screenPos)
     {
         if (!isDragging || dragIconRT == null) return;
 
-        // convert from screen space to canvas space
-        Vector2 localPos;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 rootCanvas.transform as RectTransform,
                 screenPos,
                 rootCanvas.worldCamera,
-                out localPos))
+                out var localPos))
         {
             dragIconRT.localPosition = localPos;
         }
@@ -150,6 +201,7 @@ public class InventoryUIController : MonoBehaviour
     {
         isDragging = false;
         draggingFrom = null;
+        draggingType = DragType.None;
 
         if (dragIconInstance != null)
             dragIconInstance.enabled = false;
@@ -165,33 +217,40 @@ public class InventoryUIController : MonoBehaviour
 
         if (target == draggingFrom)
         {
-            // dropped on same slot, nothing to do
             EndDrag();
             return;
         }
 
-        // move the potion stack to the new slot
-        currentPotionSlot = target;
-        ApplyCurrentPotionStateToSlots();
-
-        EndDrag();
-    }
-
-    private void ApplyCurrentPotionStateToSlots()
-    {
-        if (slots == null || slots.Length == 0) return;
-
-        foreach (var s in slots)
+        // Optional: prevent overlapping stacks
+        if (draggingType == DragType.Health && target == currentMagicSlot && magicCount > 0)
         {
-            if (s == currentPotionSlot)
-                s.SetCount(currentPotionCount);
-            else
-                s.SetCount(0);
+            EndDrag();
+            return;
         }
+        if (draggingType == DragType.Magic && target == currentHealthSlot && healthCount > 0)
+        {
+            EndDrag();
+            return;
+        }
+
+        // Move whichever stack we’re dragging
+        switch (draggingType)
+        {
+            case DragType.Health:
+                currentHealthSlot = target;
+                break;
+            case DragType.Magic:
+                currentMagicSlot = target;
+                break;
+        }
+
+        ApplyCountsToSlots();
+        EndDrag();
     }
 
     // -------------------------------------------------------------------------
     // Drag ghost creation
+    // -------------------------------------------------------------------------
 
     private void CreateDragIcon()
     {
@@ -205,25 +264,26 @@ public class InventoryUIController : MonoBehaviour
             dragIconRT = go.GetComponent<RectTransform>();
             dragIconInstance = go.GetComponent<Image>();
 
-            dragIconInstance.raycastTarget = false; // let raycasts pass through to slots
-            dragIconInstance.enabled = false;       // hidden until dragging
+            dragIconInstance.raycastTarget = false;
+            dragIconInstance.enabled = false;
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Slot click handling -> actually use the potions
+    // -------------------------------------------------------------------------
 
     public void OnSlotClicked(InventorySlotUI slot)
     {
-        if (slot == null || potionInventory == null)
-            return;
-
-        // Only allow using from the slot that currently holds the potion stack
-        if (slot != currentPotionSlot)
-            return;
-
-        // Let PotionInventory handle all logic: HP check, count, sound, UI
-        potionInventory.TryUsePotion();
+        if (slot == currentHealthSlot)
+        {
+            if (healthPotionInventory != null)
+                healthPotionInventory.TryUsePotion();
+        }
+        else if (slot == currentMagicSlot)
+        {
+            if (magicPotionInventory != null)
+                magicPotionInventory.TryUseMagicPotion();
+        }
     }
-
-
-
 }

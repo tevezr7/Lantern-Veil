@@ -8,10 +8,18 @@ public class InventoryScreenController : MonoBehaviour
     [Header("Links")]
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private GameObject root;
+
+    [Header("Health Potions UI")]
     [SerializeField] private Image potionIcon;
     [SerializeField] private TMP_Text potionCountText;
     [SerializeField] private Sprite potionSprite;
     [SerializeField] private PotionInventory potionInventory;
+
+    [Header("Magic Potions UI")]
+    [SerializeField] private Image magicPotionIcon;              // NEW
+    [SerializeField] private TMP_Text magicPotionCountText;      // NEW
+    [SerializeField] private Sprite magicPotionSprite;           // NEW
+    [SerializeField] private MagicPotionInventory magicPotionInventory; // NEW
 
     [Header("Behavior")]
     [SerializeField] private bool pauseOnOpen = true;
@@ -19,8 +27,8 @@ public class InventoryScreenController : MonoBehaviour
     [SerializeField] private float fade = 0.15f;
 
     [Header("Inventory Music")]
-    [SerializeField] private AudioSource inventoryMusicSource;  // assign in Inspector
-    [SerializeField] private AudioClip inventoryMusicClip;      // assign track here
+    [SerializeField] private AudioSource inventoryMusicSource;
+    [SerializeField] private AudioClip inventoryMusicClip;
     [SerializeField][Range(0f, 1f)] private float inventoryMusicVolume = 0.5f;
 
     bool isOpen;
@@ -30,6 +38,7 @@ public class InventoryScreenController : MonoBehaviour
         if (!root) root = gameObject;
         if (!canvasGroup) canvasGroup = GetComponent<CanvasGroup>();
 
+        // --- find inventories if not assigned ---
         if (!potionInventory)
         {
 #if UNITY_2023_1_OR_NEWER
@@ -39,7 +48,18 @@ public class InventoryScreenController : MonoBehaviour
 #endif
         }
 
+        if (!magicPotionInventory)
+        {
+#if UNITY_2023_1_OR_NEWER
+            magicPotionInventory = Object.FindAnyObjectByType<MagicPotionInventory>();
+#else
+            magicPotionInventory = FindObjectOfType<MagicPotionInventory>();
+#endif
+        }
+
+        // assign sprites
         if (potionIcon && potionSprite) potionIcon.sprite = potionSprite;
+        if (magicPotionIcon && magicPotionSprite) magicPotionIcon.sprite = magicPotionSprite;
 
         // start hidden
         root.SetActive(false);
@@ -47,14 +67,23 @@ public class InventoryScreenController : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
+        // subscribe to events
         if (potionInventory != null)
             potionInventory.OnPotionChanged += OnPotionChanged;
+
+        if (magicPotionInventory != null)
+            magicPotionInventory.OnMagicPotionChanged += OnMagicPotionChanged;
     }
+
+
 
     void OnDestroy()
     {
         if (potionInventory != null)
             potionInventory.OnPotionChanged -= OnPotionChanged;
+
+        if (magicPotionInventory != null)
+            magicPotionInventory.OnMagicPotionChanged -= OnMagicPotionChanged;
     }
 
     void Update()
@@ -112,12 +141,17 @@ public class InventoryScreenController : MonoBehaviour
         Time.unscaledTime <= _escConsumedUntil;
 
     // -------------------------------------------------------------------------
-    // Potion UI
+    // Potion UI (Health + Magic)
     // -------------------------------------------------------------------------
 
     void OnPotionChanged(int count)
     {
         if (potionCountText) potionCountText.text = "x" + count;
+    }
+
+    void OnMagicPotionChanged(int count)
+    {
+        if (magicPotionCountText) magicPotionCountText.text = "x" + count;
     }
 
     // -------------------------------------------------------------------------
@@ -139,9 +173,21 @@ public class InventoryScreenController : MonoBehaviour
         if (UIAudio.I != null)
             UIAudio.I.PlayInventoryOpen();
 
-        // Update potion count text
+        // Refresh counts in the header text
         if (potionCountText && potionInventory)
             potionCountText.text = "x" + potionInventory.potion_counter;
+
+       
+        if (InventoryUIController.Instance != null)
+        {
+            if (potionInventory != null)
+                InventoryUIController.Instance.RefreshHealthPotionDisplay(potionInventory.potion_counter);
+
+            // If you have a magic inventory:
+            var magicInv = FindObjectOfType<MagicPotionInventory>();
+            if (magicInv != null)
+                InventoryUIController.Instance.RefreshMagicPotionDisplay(magicInv.magicPotionCount);
+        }
 
         root.SetActive(true);
         canvasGroup.interactable = true;
@@ -151,7 +197,7 @@ public class InventoryScreenController : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        // 🎵 Start inventory music
+        // 🎵 Start inventory music (your existing code)
         if (inventoryMusicSource != null && inventoryMusicClip != null)
         {
             if (inventoryMusicSource.clip != inventoryMusicClip)

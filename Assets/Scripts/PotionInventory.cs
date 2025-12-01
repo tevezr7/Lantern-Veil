@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;   // <--- add this so we can use IEnumerator
+using System.Collections;   // for IEnumerator
 
 public class PotionInventory : MonoBehaviour
 {
@@ -117,9 +117,10 @@ public class PotionInventory : MonoBehaviour
         if (playerUI != null)
             playerUI.UpdatePotionCount();
 
-        // Inventory grid
+        // Inventory grid – explicitly HEALTH potions now
         if (InventoryUIController.Instance != null)
-            InventoryUIController.Instance.RefreshPotionDisplay(potion_counter);
+            InventoryUIController.Instance.RefreshHealthPotionDisplay(potion_counter);
+        // (InventoryUIController also still supports RefreshPotionDisplay if anything calls that)
 
         OnPotionChanged?.Invoke(potion_counter);
     }

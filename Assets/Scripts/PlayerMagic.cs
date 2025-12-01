@@ -74,4 +74,9 @@ public class PlayerMagic : MonoBehaviour
         UseMagic(amount);       // uses YOUR bar animation & lerp logic
         return true;
     }
+    public void RestoreMagic(float amount)
+    {
+        magic = Mathf.Min(magic + amount, maxMagic);
+        lerpTimer = 0f;
+    }
 }
