@@ -79,6 +79,11 @@ public class MagicPotionInventory : MonoBehaviour
         if (sfxSource && drinkSfx)
             sfxSource.PlayOneShot(drinkSfx);
 
+        // Track stats
+        if (GameSessionStats.Instance != null)
+            GameSessionStats.Instance.OnHealthPotionUsed();
+
+
         Debug.Log($"[MagicPotionInventory] UseMagicPotion -> {magicPotionCount}");
         RefreshUI();
         return true;

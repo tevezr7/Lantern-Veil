@@ -44,6 +44,7 @@ public class UIAudio : MonoBehaviour
         src.playOnAwake = false;
         src.loop = false;
         src.spatialBlend = 0f; // 2D
+        src.ignoreListenerPause = true;
     }
 
     // ----------------- Basic UI -----------------

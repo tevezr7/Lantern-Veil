@@ -101,6 +101,10 @@ public class PotionInventory : MonoBehaviour
         if (sfxSource && drinkSfx)
             sfxSource.PlayOneShot(drinkSfx);
 
+        // Track stats
+        if (GameSessionStats.Instance != null)
+            GameSessionStats.Instance.OnHealthPotionUsed();
+
         // Update HUD + inventory grid
         RefreshUI();
     }
