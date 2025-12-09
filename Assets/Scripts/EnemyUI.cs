@@ -7,6 +7,11 @@ public class EnemyUI : MonoBehaviour
     [SerializeField] private Camera camera;
     [SerializeField] private Transform enemy;
 
+    void Awake()
+    {
+        if (camera == null)
+            camera = Camera.main;
+    }
     public void UpdateHealthBar(float currentValue, float maxValue)
     {
         slider.value = currentValue / maxValue;

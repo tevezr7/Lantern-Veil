@@ -32,6 +32,8 @@ public class EnemyHealth : MonoBehaviour
     }
     void Start()
     {
+        if (healthBar == null)
+            healthBar = GetComponentInChildren<EnemyUI>();
         health = maxHealth;
         healthBar.UpdateHealthBar(health, maxHealth);
     }
