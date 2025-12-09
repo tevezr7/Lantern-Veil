@@ -50,19 +50,18 @@ public class EnemyHealth : MonoBehaviour
         healthBar.UpdateHealthBar(health, maxHealth);
         if (health <= 0)
         {
-            PlayDeathSound();
-            Destroy(gameObject); //temporary death handling
+            Die(); //temporary death handling
         }
     }
 
-    public void StartBurning(int DamagePerSecond)
+    public void StartBurning(int damagePerSecond)
     {
         isBurning = true;
         if (BurnCoroutine != null)
         {
             StopCoroutine(BurnCoroutine); // stop any existing burn coroutine if already burning
         }
-        BurnCoroutine = StartCoroutine(BurnDamage(DamagePerSecond)); // start the burn damage coroutine
+        BurnCoroutine = StartCoroutine(BurnDamage(damagePerSecond)); // start the burn damage coroutine
     }
 
     private IEnumerator BurnDamage(int DamagePerSecond)
@@ -88,7 +87,9 @@ public class EnemyHealth : MonoBehaviour
     }
     void Die()
     {
+        PlayDeathSound();
         OnDeath?.Invoke(this); //death event, checks for subscribers
+        Destroy(gameObject); //temporary death handling
     }
     private void PlayDeathSound()
     {

@@ -65,6 +65,18 @@ public class FlameThrower : MonoBehaviour
 
         if (flameRadius != null)
             flameRadius.gameObject.SetActive(true);
+
+        if (flameRadius != null)
+        {
+            // Enable FlameEvent logic
+            flameRadius.enabled = true;
+
+            // Enable the collider even if it's on a child object
+            var col = flameRadius.GetComponentInChildren<Collider>();
+            if (col != null)
+                col.enabled = true;
+        }
+
         //sound effect can be added here
         StartFlameSound();
 
@@ -88,8 +100,13 @@ public class FlameThrower : MonoBehaviour
             ShootingSystem.gameObject.SetActive(false);
         }
 
-        if (flameRadius != null)
-            flameRadius.gameObject.SetActive(false);
+        foreach (var enemy in flameRadius.EnemiesInRange)
+        {
+            StopDamagingEnemy(enemy);
+        }
+        flameRadius.ForceClear();
+
+        StartCoroutine(DisableFlameColliderNextFrame());
 
         if (manaDrainRoutine != null)
         {
@@ -98,6 +115,18 @@ public class FlameThrower : MonoBehaviour
         }
         //end audio here
         StopFlameSound();
+    }
+
+    private IEnumerator DisableFlameColliderNextFrame()
+    {
+        // Wait one physics update so EXIT events fire
+        yield return new WaitForFixedUpdate();
+
+        flameRadius.enabled = false;
+
+        var col = flameRadius.GetComponentInChildren<Collider>();
+        if (col != null)
+            col.enabled = false;
     }
 
     private void StartFlameSound()

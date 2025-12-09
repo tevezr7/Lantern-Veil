@@ -189,8 +189,12 @@
         {
             alreadyAttacked = false;
 
-            // Only resume movement if player is no longer in attack range (prevents stepping back mid-attack)
-            bool playerStillClose = false;
+            if (agent == null) return;
+            if (!agent.enabled) return;
+            if (!agent.isOnNavMesh) return;
+
+        // Only resume movement if player is no longer in attack range (prevents stepping back mid-attack)
+        bool playerStillClose = false;
             if (player != null)
             {
                 float dist = Vector3.Distance(transform.position, player.position);

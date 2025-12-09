@@ -3114,7 +3114,7 @@ GameObject:
   - component: {fileID: 3856805591785887162}
   m_Layer: 8
   m_Name: Spider_Final (2)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3184,14 +3184,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b056cea5b53b4841aeb0ef936bb8f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  attackDelay: 3
+  attackDelay: 2
   attackDamage: 10
   attackRange: 1.8
-  attackRadius: 1.1
+  attackRadius: 1.5
   powerMult: 1
   attackLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
 --- !u!114 &8065119084942776779
 MonoBehaviour:
   m_ObjectHideFlags: 0

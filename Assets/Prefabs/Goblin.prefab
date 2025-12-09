@@ -651,6 +651,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Goblin
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b72e5ccea0dcfe1429b766abcaba00f3,
+        type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: 6514859300706074475, guid: b72e5ccea0dcfe1429b766abcaba00f3,
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -741,13 +746,20 @@ MonoBehaviour:
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 128
+  eyes: {fileID: 0}
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 0
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 0
   timeBetweenAttacks: 0
   sightRange: 15
-  attackRange: 2
+  attackRange: 3
   playerInSightRange: 0
   playerInAttackRange: 0
+  chaseSpeed: 3.5
+  closeRangeSpeed: 2
+  stoppingDistanceMargin: 0.1
 --- !u!114 &1777339880068544887
 MonoBehaviour:
   m_ObjectHideFlags: 0

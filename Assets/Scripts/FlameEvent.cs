@@ -39,6 +39,13 @@ public class FlameEvent : MonoBehaviour
         }
     }
 
+    public void ForceClear()
+    {
+        foreach (var enemy in enemiesInRange)
+            OnEnemyExit?.Invoke(enemy);
+
+        enemiesInRange.Clear();
+    }
     private void OnDestroy()
     {
         // Make a copy to be safe if listeners modify the list during callbacks
