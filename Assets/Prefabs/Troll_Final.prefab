@@ -841,6 +841,8 @@ GameObject:
   - component: {fileID: 7255464644830903987}
   - component: {fileID: 1277043635138331988}
   - component: {fileID: 4258548369082352438}
+  - component: {fileID: 1900582771885813026}
+  - component: {fileID: 1868715299719556525}
   m_Layer: 8
   m_Name: Troll_Final
   m_TagString: Enemy
@@ -925,8 +927,8 @@ MonoBehaviour:
   canBeStaggered: 0
   isBurning: 0
   isBurnable: 1
-  deathSfx: {fileID: 0}
-  sfxSource: {fileID: 0}
+  deathSfx: {fileID: 8300000, guid: 58fb93c33e88bad479221d45a83689b6, type: 3}
+  sfxSource: {fileID: 1900582771885813026}
   healthBar: {fileID: 8095047039227262907}
 --- !u!114 &7255464644830903987
 MonoBehaviour:
@@ -1007,6 +1009,129 @@ CapsuleCollider:
   m_Height: 4.1
   m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
+--- !u!82 &1900582771885813026
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4230582502784072944}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 98df094901e5fde46ae8eb444f2f12ea,
+    type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 25
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1868715299719556525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4230582502784072944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69c7efbdc9b53f6438c3290a9da34db2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OgreAmbientSFX
+  ambientClips:
+  - {fileID: 8300000, guid: b8202c661af66aa4d98e637af7339515, type: 3}
+  - {fileID: 8300000, guid: b5893295f140143489b3a745988ad0bd, type: 3}
+  - {fileID: 8300000, guid: 93157362b06823b4bad8c2e793864ed3, type: 3}
+  - {fileID: 8300000, guid: 3c3b0a8d60f0ec4449a2091fdab9259e, type: 3}
+  - {fileID: 8300000, guid: 3ad681a84cd44c14a94b5a253e0ed766, type: 3}
+  - {fileID: 8300000, guid: ee914ba333816b04ab50b9f99f63cfca, type: 3}
+  - {fileID: 8300000, guid: 8c5ebab30e2e4ac4c8f343ea45de3edb, type: 3}
+  - {fileID: 8300000, guid: 595aed9b0bf5a3a42be119fb1203d8b2, type: 3}
+  - {fileID: 8300000, guid: ee52359b24ab89d42a0965f98cda8b75, type: 3}
+  - {fileID: 8300000, guid: 04c4769539c0bc04db83128237d26f29, type: 3}
+  delayRange: {x: 3, y: 6}
+  maxDistanceToPlayer: 25
 --- !u!1 &4588946433055149048
 GameObject:
   m_ObjectHideFlags: 0

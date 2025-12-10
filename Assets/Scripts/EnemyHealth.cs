@@ -1,13 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
-
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Health")]
     public float health;
     public float maxHealth; //will inherit from prefab / child class
-    public event System.Action<EnemyHealth> OnDeath; 
+    public event System.Action<EnemyHealth> OnDeath;
 
     [Header("Hit Reaction")]
     public bool canBeStaggered;
@@ -16,41 +15,45 @@ public class EnemyHealth : MonoBehaviour
     private Coroutine BurnCoroutine;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip deathSfx;       
-    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip deathSfx;
+    [SerializeField][Range(0f, 1f)] private float deathVolume = 1f;
+    [SerializeField] private float deathMaxDistance = 30f;
 
     [SerializeField] private EnemyUI healthBar;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    
     private void Awake()
     {
-        if (healthBar != null)
-        {
+        // make sure we have a health bar reference
+        if (healthBar == null)
             healthBar = GetComponentInChildren<EnemyUI>();
-        }
     }
+
     void Start()
     {
         if (healthBar == null)
             healthBar = GetComponentInChildren<EnemyUI>();
+
         health = maxHealth;
-        healthBar.UpdateHealthBar(health, maxHealth);
+
+        if (healthBar != null)
+            healthBar.UpdateHealthBar(health, maxHealth);
     }
 
-    // Update is called once per frame
     void Update()
     {
         health = Mathf.Clamp(health, 0, maxHealth);
     }
+
     public void TakeDamage(float damage, Vector3 attackerPosition)
-    {   
-        
+    {
         health -= damage;
-        healthBar.UpdateHealthBar(health, maxHealth);
-        if (health <= 0)
+
+        if (healthBar != null)
+            healthBar.UpdateHealthBar(health, maxHealth);
+
+        if (health <= 0f)
         {
-            Die(); //temporary death handling
+            Die();
         }
     }
 
@@ -66,15 +69,16 @@ public class EnemyHealth : MonoBehaviour
 
     private IEnumerator BurnDamage(int DamagePerSecond)
     {
-       float minTime = 1f / DamagePerSecond; // time interval between damage ticks
-       WaitForSeconds wait = new WaitForSeconds(minTime); 
-       int damageTick = Mathf.FloorToInt(minTime) + 1; // damage per tick
-       TakeDamage(damageTick, transform.position); // initial damage tick
-       while (isBurning)
-       {
+        float minTime = 1f / DamagePerSecond; // time interval between damage ticks
+        WaitForSeconds wait = new WaitForSeconds(minTime);
+        int damageTick = Mathf.FloorToInt(minTime) + 1; // damage per tick
+        TakeDamage(damageTick, transform.position); // initial damage tick
+
+        while (isBurning)
+        {
             yield return wait; // wait for the next tick
             TakeDamage(damageTick, transform.position); // apply damage per tick
-       }
+        }
     }
 
     public void StopBurning()
@@ -83,28 +87,45 @@ public class EnemyHealth : MonoBehaviour
         if (BurnCoroutine != null)
         {
             StopCoroutine(BurnCoroutine);
+            BurnCoroutine = null;
         }
     }
+
     void Die()
     {
         PlayDeathSound();
+
         OnDeath?.Invoke(this); //death event, checks for subscribers
-        Destroy(gameObject); //temporary death handling
+
+        // destroy the enemy object (sound will keep playing on a temp AudioSource)
+        Destroy(gameObject);
     }
+
     private void PlayDeathSound()
     {
-        if (deathSfx == null) return;
+        if (deathSfx == null)
+        {
+            // optional debug so you can see in console if you forgot to assign a clip
+            // Debug.LogWarning($"[EnemyHealth] No deathSfx assigned on {name}");
+            return;
+        }
 
-        if (sfxSource != null)
-        {
-            // small  pitch variation to make it sound less repetitive
-            sfxSource.pitch = Random.Range(0.95f, 1.05f);
-            sfxSource.PlayOneShot(deathSfx);
-        }
-        else
-        {
-          
-            AudioSource.PlayClipAtPoint(deathSfx, transform.position);
-        }
+        // create a temporary GameObject just to play the sound,
+        // so destroying THIS enemy doesn't kill the audio
+        GameObject temp = new GameObject("EnemyDeathSFX");
+        temp.transform.position = transform.position;
+
+        AudioSource a = temp.AddComponent<AudioSource>();
+        a.clip = deathSfx;
+        a.volume = deathVolume;
+        a.spatialBlend = 1f;  // 3D sound
+        a.rolloffMode = AudioRolloffMode.Linear;
+        a.maxDistance = deathMaxDistance;
+        a.pitch = Random.Range(0.95f, 1.05f);
+
+        a.Play();
+
+        // destroy the temp object after the clip finishes
+        Destroy(temp, deathSfx.length / a.pitch);
     }
 }

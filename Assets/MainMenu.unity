@@ -1175,10 +1175,10 @@ MonoBehaviour:
       m_Calls: []
   m_text: "General Movement\r\nW / A / S / D \u2013 Move\nCtrl \u2013 Dash\r\nSpace
     \u2013 Jump\n\r\nCamera\r\nMouse Move \u2013 Look Around\r\n\r\nCombat\r\nLeft
-    Mouse \u2013 Light Attack\nG \u2013 Heavy Attack\r\nRight Mouse \u2013 Block/Parry\nQ
+    Mouse \u2013 Light Attack\nR \u2013 Heavy Attack\r\nRight Mouse \u2013 Block/Parry\nQ
     \u2013 Fire Spell\r\n\r\nInventory & UI\nF \u2013 Interact / Pick Up\r\nB \u2013
-    Open / Close Inventory\r\nEsc \u2013 Pause / Back / Close Menus\r\n\r\nPotions\r\nG
-    \u2013 Use Health Potion\n - Use Mana Potion\r\n\r\nOther \r\n"
+    Open / Close Inventory\r\nEsc \u2013 Pause / Back / Close Menus\r\n\r\nPotions\r\n1
+    \u2013 Use Health Potion\n2 - Use Mana Potion\r\n "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5309,9 +5309,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Group \u2013 Tevez\r\n\r\nLead Developer / Story Designer\r\nAldair Perez\r\n\r\nEnvironment
-    & Creature Design\r\nSebastian Garay-Guzman\r\n\r\nGameplay Programmer / Systems
-    Polishing\r\nNathaniel Kirby\r\n\r\nAnimator / Environment Artist\r\nGerardo
-    Sanchez\r\n"
+    & Creature Designer\r\nSebastian Garay-Guzman\r\n\r\nGameplay Programmer / Systems
+    Polishing\r\nNathaniel Kirby\r\n\r\nEnvironment & Theme Designer\r\nGerardo Sanchez\r\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
