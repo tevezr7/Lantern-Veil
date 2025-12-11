@@ -17,8 +17,8 @@ While our original plan included a full story mode and a narrative-driven campai
 Lead Developer / Story Designer -
 Worked on all animations
 Worked on coding in Unity
-Worked on complete combat, quest, and interaction   systems.
-Mainly worked on animation and Unity alongside creating and running scripts.
+Worked on complete combat, quest, and interaction systems.
+Mainly worked within the Unity engine and VSCode on animations and scripting.
 
 # Sebastian Garay Guzman
 Enemy Design & Blender Rigging -
@@ -60,7 +60,9 @@ VoiceBosch: Damage sounds for male
 
 ROWLAN from Unity Asset Store: Grass texture for outside of the arena
 
-Unity: Engine, particle pack, other simple assets.
+shaiksha35: Sword model used in the game
+
+Unity: Engine, particle pack, other simple assets
 
 
 
