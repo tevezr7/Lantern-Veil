@@ -17,7 +17,7 @@ While our original plan included a full story mode and a narrative-driven campai
 Lead Developer / Story Designer
 Worked on all animations
 Worked on coding in Unity
-Worked on arena level
+Worked on complete combat, quest, and interaction   systems.
 Mainly worked on animation and Unity alongside creating and running scripts.
 
 # Sebastian Garay Guzman
@@ -36,7 +36,7 @@ Mainly worked on UI, debugging, creating/running scripts, and making the game fe
 
 # Gerardo Sanchez
 Environment & Theme Designer
-Created the arena level prefab
+Created the arena level
 Created the quest giver prefab
 Worked on overall theme 
 Mainly worked on enemy creation, quest giver creation, and arena level creation.
@@ -44,18 +44,23 @@ Mainly worked on enemy creation, quest giver creation, and arena level creation.
 
 Attributions - 
 
-Health Bar: Health bar from Unity Asset store
+Health Bar: Health bar from Natty Game Dev
 
 LowPolyDungeonsLite: Potion, and a few other assets were used
 
-MagicaVoxel: Arena Level, Enemies, Quest Giver, etc - almost all the are was imported using this into Unity
-
-Blender: Animations
+MagicaVoxel: Arena Level, Enemies, Quest Giver, etc - almost all assets were imported into Unity using this software to build them
 
 World of Warcraft: Enemy Audio, UI audio, Some of the music, etc
 
+Dragon Studio: Sword and flame sound effects
 
+Mystic-Forge from Unity Asset Store: Tree models
 
+VoiceBosch: Damage sounds for male
+
+ROWLAN from Unity Asset Store: Grass texture for outside of the arena
+
+Unity: Engine, particle pack, other simple assets.
 
 
 
