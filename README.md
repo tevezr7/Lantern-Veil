@@ -21,10 +21,10 @@ Worked on complete combat, quest, and interaction   systems.
 Mainly worked on animation and Unity alongside creating and running scripts.
 
 # Sebastian Garay Guzman
-Environment & Creature Designer -
-Worked on enemy prefabs
+Enemy Design & Blender Rigging -
+Worked on enemy models
 Worked on inspiration for arena level
-Worked a little with Blender
+Worked with Blender to rig models for animation
 Mainly worked on animation and enemy creation alongside environment design.
 
 # Nathaniel Kirby
@@ -35,9 +35,9 @@ Polished and fixed systems that needed touch ups
 Mainly worked on UI, debugging, creating/running scripts, and making the game feel responsive.
 
 # Gerardo Sanchez
-Environment & Theme Designer -
+Environment & Enemy Designer -
 Created the arena level
-Created the quest giver prefab
+Created the quest giver prefab and enemy models
 Worked on overall theme 
 Mainly worked on enemy creation, quest giver creation, and arena level creation.
 
