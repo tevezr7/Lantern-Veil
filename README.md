@@ -14,28 +14,28 @@ While our original plan included a full story mode and a narrative-driven campai
 ////////////////////-----Contributions-----\\\\\\\\\\\\\\\\\\\\\
 
 # Aldair Perez
-Lead Developer / Story Designer
+Lead Developer / Story Designer -
 Worked on all animations
 Worked on coding in Unity
 Worked on complete combat, quest, and interaction   systems.
 Mainly worked on animation and Unity alongside creating and running scripts.
 
 # Sebastian Garay Guzman
-Environment & Creature Designer
+Environment & Creature Designer -
 Worked on enemy prefabs
 Worked on inspiration for arena level
 Worked a little with Blender
 Mainly worked on animation and enemy creation alongside environment design.
 
 # Nathaniel Kirby
-Gameplay Programmer / Systems Polishing
+Gameplay Programmer / Systems Polishing -
 Worked on coding in Unity
 Worked on almost all of the UI
 Polished and fixed systems that needed touch ups
 Mainly worked on UI, debugging, creating/running scripts, and making the game feel responsive.
 
 # Gerardo Sanchez
-Environment & Theme Designer
+Environment & Theme Designer -
 Created the arena level
 Created the quest giver prefab
 Worked on overall theme 
