@@ -62,6 +62,9 @@ ROWLAN from Unity Asset Store: Grass texture for outside of the arena
 
 shaiksha35: Sword model used in the game
 
+TGSchematics: Medieval ambient music
+
+Makai Symphony: Combat music
 Unity: Engine, particle pack, other simple assets
 
 
